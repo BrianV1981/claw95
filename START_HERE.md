@@ -28,7 +28,13 @@ pip install -e .[dev]
 ```
 
 ## Launch room + clients
-Recommended one-command interactive mode (single terminal window via tmux):
+Simplest reliable mode (recommended):
+```bash
+./scripts/start-safe.sh
+```
+This starts **server only** and prints exact commands for AgentA/AgentB in separate terminals.
+
+Optional one-command tmux mode:
 ```bash
 ./scripts/dev-stack.sh
 ```

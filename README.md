@@ -74,6 +74,7 @@ make check
 ./scripts/preflight.sh              # environment + policy + quick checks
 ./scripts/doctor.sh                 # runtime/sink/readiness diagnostics
 ./scripts/demo-ready.sh             # preflight + doctor + smoke test gate
+./scripts/start-safe.sh             # simplest mode: server only + printed next commands
 ./scripts/dev-stack.sh              # one-command interactive tmux stack
 ./scripts/dev-stack-stop.sh         # stop tmux stack
 ./scripts/start-room.sh             # run server + AgentA + AgentB watch mode

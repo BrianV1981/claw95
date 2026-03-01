@@ -27,23 +27,28 @@ make check
 ```
 Expected: lint + typecheck + tests pass.
 
-## 4) Recommended: one-command interactive stack (tmux)
+## 4) Recommended: simplest reliable launch
+```bash
+./scripts/start-safe.sh
+```
+This starts server only and prints exact AgentA/AgentB commands.
+
+## 5) Alternative launch modes
+One-command interactive tmux stack:
 ```bash
 ./scripts/dev-stack.sh
 tmux attach -t claw95
 ```
-This opens server + AgentA + AgentB in one tmux session (no terminal juggling).
-
 Stop it later with:
 ```bash
 ./scripts/dev-stack-stop.sh
 ```
 
-## 5) Alternative launch modes
 Server + two watch clients:
 ```bash
 ./scripts/start-room.sh
 ```
+
 Server-only launcher:
 ```bash
 ./scripts/start-dev.sh
