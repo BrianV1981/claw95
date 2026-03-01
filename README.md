@@ -76,7 +76,8 @@ make check
 ./scripts/demo-ready.sh             # preflight + doctor + smoke test gate
 ./scripts/start-safe.sh             # simplest mode: server only + printed next commands
 ./scripts/start-subagent-bridge.sh  # bridge @ops/@qa to OpenClaw subagents
-./scripts/dev-stack.sh              # one-command interactive tmux stack
+./scripts/dev-stack.sh              # 4-pane single-window stack (server/bridge/user/logs)
+./scripts/dev-stack-2tab.sh         # 2-tab stack: server tab + user/3-bot tab
 ./scripts/dev-stack-stop.sh         # stop tmux stack
 ./scripts/start-room.sh             # run server + AgentA + AgentB watch mode
 ./scripts/start-dev.sh              # run server with policy

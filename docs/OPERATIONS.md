@@ -46,6 +46,15 @@ Preferred (interactive, one terminal via tmux):
 tmux attach -t claw95
 ```
 Includes 4 panes: server, subagent bridge, User client, log tail.
+
+Alternative (requested): server on one tab + user/3 bots on second tab:
+```bash
+./scripts/dev-stack-2tab.sh
+tmux attach -t claw95-2tab
+```
+Window 1 = server, Window 2 = User + OpsBot + QABot + GrowthBot.
+Use `Ctrl+b` then `n` / `p` to switch tabs.
+
 Stop:
 ```bash
 ./scripts/dev-stack-stop.sh

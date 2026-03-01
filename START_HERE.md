@@ -45,6 +45,13 @@ tmux attach -t claw95
 This gives 4 panes: server + subagent bridge + interactive User + logs.
 Use `@ops ...` and `@qa ...` in the User pane.
 
+Alternative 2-tab mode:
+```bash
+./scripts/dev-stack-2tab.sh
+tmux attach -t claw95-2tab
+```
+Window 1 = server, Window 2 = User + OpsBot + QABot + GrowthBot.
+
 Quick watch mode:
 ```bash
 ./scripts/start-room.sh
