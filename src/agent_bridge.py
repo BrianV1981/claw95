@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import asyncio
 import json
+import os
 from typing import Any
 
 from websockets import connect
@@ -37,9 +38,12 @@ async def send_loop(ws: Any) -> None:
         await ws.send(json.dumps({"type": "message.submit", "content": text}))
 
 
-async def run(name: str, uri: str, message: str | None) -> None:
+async def run(name: str, uri: str, message: str | None, token: str) -> None:
     async with connect(uri) as ws:
-        await ws.send(json.dumps({"type": "join", "sender": {"id": name, "type": "agent"}}))
+        join_event = {"type": "join", "sender": {"id": name, "type": "agent"}}
+        if token:
+            join_event["auth"] = {"token": token}
+        await ws.send(json.dumps(join_event))
 
         if message:
             await ws.send(json.dumps({"type": "message.submit", "content": message}))
@@ -64,6 +68,7 @@ if __name__ == "__main__":
     parser.add_argument("--name", required=True)
     parser.add_argument("--uri", default="ws://127.0.0.1:8765")
     parser.add_argument("--message", default=None)
+    parser.add_argument("--token", default=os.getenv("CLAW95_TOKEN", ""))
     args = parser.parse_args()
 
-    asyncio.run(run(args.name, args.uri, args.message))
+    asyncio.run(run(args.name, args.uri, args.message, args.token))

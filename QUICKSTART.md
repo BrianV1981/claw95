@@ -87,6 +87,23 @@ room:
 
 Restart server after changes.
 
+## 8c) Optional client auth (shared secret)
+Edit `config/policy.yaml`:
+```yaml
+room:
+  shared_secret: "my-secret"
+```
+Then connect clients with token:
+```bash
+./scripts/start-client.sh AgentA
+# or explicitly
+python3 src/agent_bridge.py --name AgentA --token "my-secret"
+```
+Or set env var once:
+```bash
+export CLAW95_TOKEN="my-secret"
+```
+
 ## 9) Check outputs (posterity)
 Claw95 writes outputs to:
 - `logs/events.jsonl` (core audit)

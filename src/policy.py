@@ -17,6 +17,7 @@ class Policy:
     command_prefix: str
     start_paused: bool
     global_min_interval_ms: int
+    shared_secret: str
     sinks: dict[str, object]
 
 
@@ -30,6 +31,7 @@ DEFAULT_POLICY = Policy(
     command_prefix="/",
     start_paused=False,
     global_min_interval_ms=0,
+    shared_secret="",
     sinks={
         "jsonl_enabled": False,
         "jsonl_path": "logs/mirror.jsonl",
@@ -68,5 +70,6 @@ def load_policy(path: str | Path) -> Policy:
         global_min_interval_ms=int(
             room.get("global_min_interval_ms", DEFAULT_POLICY.global_min_interval_ms)
         ),
+        shared_secret=str(room.get("shared_secret", DEFAULT_POLICY.shared_secret)),
         sinks=default_sinks,
     )

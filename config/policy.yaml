@@ -12,6 +12,7 @@ room:
   command_prefix: "/"
   start_paused: false
   global_min_interval_ms: 1500
+  shared_secret: ""
 
 sinks:
   jsonl_enabled: true

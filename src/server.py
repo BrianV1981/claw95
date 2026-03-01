@@ -244,6 +244,21 @@ class RoomServer:
                 etype = event.get("type")
                 if etype == "join":
                     sender_id = str(event.get("sender", {}).get("id", "anon"))
+
+                    if self.policy.shared_secret:
+                        got = str(event.get("auth", {}).get("token", ""))
+                        if got != self.policy.shared_secret:
+                            await ws.send(
+                                json.dumps(
+                                    {
+                                        "schema_version": SCHEMA_VERSION,
+                                        "type": "error",
+                                        "message": "auth failed",
+                                    }
+                                )
+                            )
+                            continue
+
                     self.usernames[ws] = sender_id
                     self._log("join", {"sender_id": sender_id})
                     await self._broadcast(
