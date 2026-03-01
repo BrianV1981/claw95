@@ -83,6 +83,7 @@ python3 scripts/smoke_test.py    # end-to-end smoke test (server must be running
 Checks include Ruff, mypy, and pytest (unit + integration).
 
 ## Documentation map
+- `REVIEW_PACKET.md`
 - `START_HERE.md`
 - `QUICKSTART.md`
 - `ROADMAP.md`
