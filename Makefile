@@ -19,4 +19,4 @@ test:
 check: lint typecheck test
 
 run-server:
-	. .venv/bin/activate && python src/server.py
+	. .venv/bin/activate && python -m src.server

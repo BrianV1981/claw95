@@ -25,7 +25,7 @@ Claw95 is designed to be:
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -e .[dev]
-python src/server.py
+python -m src.server
 ```
 
 Open another terminal:
