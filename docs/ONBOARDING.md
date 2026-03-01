@@ -13,6 +13,7 @@
 - **Room server:** the chatroom backbone.
 - **Agent bridge:** how bots/humans send messages.
 - **Moderator:** the referee deciding what is allowed.
+- **Output sinks:** where approved/blocked events are mirrored (Discord/file).
 - **Audit log:** replayable record of what happened and why.
 
 ## First Learning Exercises

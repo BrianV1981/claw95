@@ -19,6 +19,7 @@ Claw95 is built to be understandable first, then extensible.
 - Interactive bridge client for agents/humans
 - Room commands: `/help`, `/who`, `/pause`, `/resume`, `/topic`, `/stats`
 - JSONL audit logs + replay summary tool
+- Multi-sink output fanout (JSONL, Markdown transcript, optional Discord webhook)
 
 ## Quickstart (under 10 minutes)
 ```bash
@@ -51,6 +52,14 @@ After chatting, summarize events:
 python -m src.replay_audit --log logs/events.jsonl
 ```
 
+## Output sinks (posterity)
+Configured in `config/policy.yaml`:
+- `sinks.jsonl_enabled` / `sinks.jsonl_path`
+- `sinks.markdown_enabled` / `sinks.markdown_path`
+- `sinks.discord_webhook_url` (optional)
+
+This lets you keep room output in Discord **and** local files (Notepad++ friendly).
+
 ## Developer workflow
 ```bash
 make setup
@@ -65,6 +74,7 @@ Checks include Ruff, mypy, and pytest (unit + integration).
 - `docs/API.md`
 - `docs/MODERATOR_SPEC.md`
 - `docs/REASON_CODES.md`
+- `docs/SINKS.md`
 - `docs/AUDITABILITY.md`
 - `docs/THREAT_MODEL.md`
 - `docs/DEEP_REVIEW.md`

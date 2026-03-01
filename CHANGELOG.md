@@ -13,7 +13,8 @@ The format is based on Keep a Changelog, and this project follows Semantic Versi
 - Event schema validation (`src/events.py`) with schema version stamping
 - Room commands: `/help`, `/who`, `/pause`, `/resume`, `/topic`, `/stats`
 - Audit replay summary tool (`src/replay_audit.py`)
-- Unit and integration tests for moderator, policy, events, and room behavior
+- Output sink framework (`src/sinks.py`) for JSONL/Markdown/Discord webhook fanout
+- Unit and integration tests for moderator, policy, events, room behavior, and sinks
 - Documentation suite: roadmap, architecture, API, moderation spec, auditability, onboarding, threat model, ADRs, release docs
 - Open-source governance docs: contributing, security, code of conduct
 - Tooling baseline: pyproject, Makefile, CI workflow

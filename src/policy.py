@@ -16,6 +16,7 @@ class Policy:
     blocked_patterns: list[str]
     command_prefix: str
     start_paused: bool
+    sinks: dict[str, object]
 
 
 DEFAULT_POLICY = Policy(
@@ -25,8 +26,16 @@ DEFAULT_POLICY = Policy(
     duplicate_window=10,
     max_message_len=1200,
     blocked_patterns=["rm -rf", "DROP TABLE", "sudo reboot"],
-    command_prefix='/',
+    command_prefix="/",
     start_paused=False,
+    sinks={
+        "jsonl_enabled": False,
+        "jsonl_path": "logs/mirror.jsonl",
+        "markdown_enabled": False,
+        "markdown_path": "logs/transcript.md",
+        "discord_webhook_url": "",
+        "discord_webhook_username": "Claw95 Archive",
+    },
 )
 
 
@@ -39,6 +48,11 @@ def load_policy(path: str | Path) -> Policy:
 
     rate = data.get("rate_limit", {})
     room = data.get("room", {})
+    sinks = data.get("sinks", {})
+
+    default_sinks = dict(DEFAULT_POLICY.sinks)
+    if isinstance(sinks, dict):
+        default_sinks.update(sinks)
 
     return Policy(
         policy_version=str(data.get("policy_version", DEFAULT_POLICY.policy_version)),
@@ -49,4 +63,5 @@ def load_policy(path: str | Path) -> Policy:
         blocked_patterns=list(data.get("blocked_patterns", DEFAULT_POLICY.blocked_patterns)),
         command_prefix=str(room.get("command_prefix", DEFAULT_POLICY.command_prefix)),
         start_paused=bool(room.get("start_paused", DEFAULT_POLICY.start_paused)),
+        sinks=default_sinks,
     )

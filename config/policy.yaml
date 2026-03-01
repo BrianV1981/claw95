@@ -11,3 +11,11 @@ blocked_patterns:
 room:
   command_prefix: "/"
   start_paused: false
+
+sinks:
+  jsonl_enabled: true
+  jsonl_path: "logs/mirror.jsonl"
+  markdown_enabled: true
+  markdown_path: "logs/transcript.md"
+  discord_webhook_url: ""
+  discord_webhook_username: "Claw95 Archive"

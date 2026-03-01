@@ -31,7 +31,7 @@ Schema version: `1.0`
 
 ### `message.blocked`
 ```json
-{"schema_version":"1.0","type":"message.blocked","decision":{"decision":"BLOCK","reason_codes":["DUPLICATE"]}}
+{"schema_version":"1.0","type":"message.blocked","sender":{"id":"agent_a"},"content":"...","decision":{"decision":"BLOCK","reason_codes":["DUPLICATE"]}}
 ```
 
 ### `system`

@@ -13,6 +13,7 @@ from websockets import serve
 from .events import SCHEMA_VERSION, validate_inbound_event
 from .moderator import Moderator
 from .policy import load_policy
+from .sinks import Sink, build_sinks
 
 
 class RoomServer:
@@ -26,6 +27,7 @@ class RoomServer:
         self.command_prefix = self.policy.command_prefix
         self.paused = self.policy.start_paused
         self.topic = "Welcome to The Clawset"
+        self.sinks: list[Sink] = build_sinks(self.policy.sinks)
 
         self.messages_published = 0
         self.messages_blocked = 0
@@ -40,6 +42,23 @@ class RoomServer:
         with self.log_path.open("a", encoding="utf-8") as f:
             f.write(json.dumps(row, ensure_ascii=False) + "\n")
 
+    def _publish_to_sinks(self, msg: dict[str, Any]) -> None:
+        payload = {
+            "ts": datetime.now(UTC).isoformat(),
+            **msg,
+        }
+        for sink in self.sinks:
+            try:
+                sink.publish(payload)
+            except Exception as exc:  # pragma: no cover
+                self._log(
+                    "sink_error",
+                    {
+                        "sink": sink.__class__.__name__,
+                        "error": str(exc),
+                    },
+                )
+
     async def _broadcast(self, msg: dict[str, Any]) -> None:
         dead = []
         wire = json.dumps(msg, ensure_ascii=False)
@@ -51,6 +70,8 @@ class RoomServer:
         for d in dead:
             self.clients.discard(d)
             self.usernames.pop(d, None)
+
+        self._publish_to_sinks(msg)
 
     async def _send_system(self, ws: Any, content: str) -> None:
         await ws.send(
@@ -205,18 +226,18 @@ class RoomServer:
 
                     if self.paused:
                         self.messages_blocked += 1
-                        await ws.send(
-                            json.dumps(
-                                {
-                                    "schema_version": SCHEMA_VERSION,
-                                    "type": "message.blocked",
-                                    "decision": {
-                                        "decision": "BLOCK",
-                                        "reason_codes": ["ROOM_PAUSED"],
-                                    },
-                                }
-                            )
-                        )
+                        blocked_msg = {
+                            "schema_version": SCHEMA_VERSION,
+                            "type": "message.blocked",
+                            "sender": {"id": sender_id},
+                            "content": content,
+                            "decision": {
+                                "decision": "BLOCK",
+                                "reason_codes": ["ROOM_PAUSED"],
+                            },
+                        }
+                        await ws.send(json.dumps(blocked_msg))
+                        self._publish_to_sinks(blocked_msg)
                         continue
 
                     decision = self.moderator.evaluate(sender_id, content)
@@ -235,19 +256,19 @@ class RoomServer:
 
                     if decision.decision == "BLOCK":
                         self.messages_blocked += 1
-                        await ws.send(
-                            json.dumps(
-                                {
-                                    "schema_version": SCHEMA_VERSION,
-                                    "type": "message.blocked",
-                                    "decision": {
-                                        "decision": decision.decision,
-                                        "reason_codes": decision.reason_codes,
-                                        "policy_version": decision.policy_version,
-                                    },
-                                }
-                            )
-                        )
+                        blocked_msg = {
+                            "schema_version": SCHEMA_VERSION,
+                            "type": "message.blocked",
+                            "sender": {"id": sender_id},
+                            "content": content,
+                            "decision": {
+                                "decision": decision.decision,
+                                "reason_codes": decision.reason_codes,
+                                "policy_version": decision.policy_version,
+                            },
+                        }
+                        await ws.send(json.dumps(blocked_msg))
+                        self._publish_to_sinks(blocked_msg)
                         continue
 
                     if decision.decision == "REWRITE":

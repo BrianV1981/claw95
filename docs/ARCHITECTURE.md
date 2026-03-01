@@ -14,8 +14,14 @@ Claw95 is a local multi-agent room composed of three core services:
 3. **Agent Bridge** (`agent_bridge.py`)
    - Lightweight client for humans/agents to join/send/listen.
 
+4. **Output Sinks** (`sinks.py`)
+   - Fan-out for posterity targets:
+     - JSONL mirror
+     - Markdown transcript
+     - optional Discord webhook archive
+
 Optional:
-4. **TUI Monitor** (`tui.py`)
+5. **TUI Monitor** (`tui.py`)
    - 90s-style terminal dashboard.
 
 ## Trust Boundaries
