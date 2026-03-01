@@ -8,7 +8,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
-from websockets.server import WebSocketServerProtocol, serve
+from websockets import serve
 
 from .events import SCHEMA_VERSION, validate_inbound_event
 from .moderator import Moderator
@@ -17,8 +17,8 @@ from .policy import load_policy
 
 class RoomServer:
     def __init__(self, log_path: str, policy_path: str) -> None:
-        self.clients: set[WebSocketServerProtocol] = set()
-        self.usernames: dict[WebSocketServerProtocol, str] = {}
+        self.clients: set[Any] = set()
+        self.usernames: dict[Any, str] = {}
         self.policy = load_policy(policy_path)
         self.moderator = Moderator(self.policy)
         self.log_path = Path(log_path)
@@ -52,7 +52,7 @@ class RoomServer:
             self.clients.discard(d)
             self.usernames.pop(d, None)
 
-    async def _send_system(self, ws: WebSocketServerProtocol, content: str) -> None:
+    async def _send_system(self, ws: Any, content: str) -> None:
         await ws.send(
             json.dumps(
                 {
@@ -65,7 +65,7 @@ class RoomServer:
 
     async def _handle_command(
         self,
-        ws: WebSocketServerProtocol,
+        ws: Any,
         sender_id: str,
         content: str,
     ) -> None:
@@ -149,7 +149,7 @@ class RoomServer:
             )
         )
 
-    async def handler(self, ws: WebSocketServerProtocol) -> None:
+    async def handler(self, ws: Any) -> None:
         self.clients.add(ws)
         try:
             async for raw in ws:

@@ -3,8 +3,7 @@ import json
 from pathlib import Path
 
 import pytest
-from websockets.client import connect
-from websockets.server import serve
+from websockets import connect, serve
 
 from src.server import RoomServer
 
