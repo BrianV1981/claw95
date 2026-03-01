@@ -20,6 +20,12 @@
 tail -f logs/events.jsonl logs/mirror.jsonl logs/transcript.md
 ```
 
+## Preflight
+Before demos or review sessions:
+```bash
+./scripts/preflight.sh
+```
+
 ## Restart workflow
 1. Stop server (`Ctrl+C` in server terminal).
 2. Restart:

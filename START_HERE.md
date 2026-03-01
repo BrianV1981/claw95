@@ -12,6 +12,11 @@ source .venv/bin/activate
 pip install -e .[dev]
 ```
 
+## Preflight check (recommended)
+```bash
+./scripts/preflight.sh
+```
+
 ## Launch room + clients
 Fastest one-command mode:
 ```bash
