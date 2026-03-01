@@ -10,6 +10,7 @@ from typing import Any
 
 from websockets.server import WebSocketServerProtocol, serve
 
+from .events import SCHEMA_VERSION, validate_inbound_event
 from .moderator import Moderator
 from .policy import load_policy
 
@@ -24,9 +25,14 @@ class RoomServer:
         self.log_path.parent.mkdir(parents=True, exist_ok=True)
         self.command_prefix = self.policy.command_prefix
         self.paused = self.policy.start_paused
+        self.topic = "Welcome to The Clawset"
+
+        self.messages_published = 0
+        self.messages_blocked = 0
 
     def _log(self, event_type: str, payload: dict[str, Any]) -> None:
         row = {
+            "schema_version": SCHEMA_VERSION,
             "ts": datetime.now(UTC).isoformat(),
             "event_type": event_type,
             **payload,
@@ -46,42 +52,102 @@ class RoomServer:
             self.clients.discard(d)
             self.usernames.pop(d, None)
 
+    async def _send_system(self, ws: WebSocketServerProtocol, content: str) -> None:
+        await ws.send(
+            json.dumps(
+                {
+                    "schema_version": SCHEMA_VERSION,
+                    "type": "system",
+                    "content": content,
+                }
+            )
+        )
+
     async def _handle_command(
         self,
         ws: WebSocketServerProtocol,
         sender_id: str,
         content: str,
     ) -> None:
-        cmd = content[len(self.command_prefix):].strip().lower()
+        rest = content[len(self.command_prefix) :].strip()
+        cmd, _, arg = rest.partition(" ")
+        cmd = cmd.lower()
+
         if cmd == "help":
-            await ws.send(
-                json.dumps(
-                    {
-                        "type": "system",
-                        "content": "Commands: /help, /who, /pause, /resume",
-                    }
-                )
+            await self._send_system(
+                ws,
+                "Commands: /help, /who, /pause, /resume, /topic <text>, /stats",
             )
             return
 
         if cmd == "who":
             users = ", ".join(self.usernames.values())
-            await ws.send(json.dumps({"type": "system", "content": f"Users: {users}"}))
+            await self._send_system(ws, f"Users: {users}")
             return
 
         if cmd == "pause":
             self.paused = True
             self._log("room_command", {"sender_id": sender_id, "command": "pause"})
-            await self._broadcast({"type": "system", "content": "Room is now paused."})
+            await self._broadcast(
+                {
+                    "schema_version": SCHEMA_VERSION,
+                    "type": "system",
+                    "content": "Room is now paused.",
+                }
+            )
             return
 
         if cmd == "resume":
             self.paused = False
             self._log("room_command", {"sender_id": sender_id, "command": "resume"})
-            await self._broadcast({"type": "system", "content": "Room resumed."})
+            await self._broadcast(
+                {
+                    "schema_version": SCHEMA_VERSION,
+                    "type": "system",
+                    "content": "Room resumed.",
+                }
+            )
             return
 
-        await ws.send(json.dumps({"type": "error", "message": f"unknown command: {cmd}"}))
+        if cmd == "topic":
+            if not arg.strip():
+                await self._send_system(ws, f"Current topic: {self.topic}")
+                return
+            self.topic = arg.strip()[:200]
+            self._log(
+                "room_command",
+                {
+                    "sender_id": sender_id,
+                    "command": "topic",
+                    "topic": self.topic,
+                },
+            )
+            await self._broadcast(
+                {
+                    "schema_version": SCHEMA_VERSION,
+                    "type": "system",
+                    "content": f"Topic set by {sender_id}: {self.topic}",
+                }
+            )
+            return
+
+        if cmd == "stats":
+            stats = (
+                f"users={len(self.usernames)} | published={self.messages_published} "
+                f"| blocked={self.messages_blocked} | paused={self.paused}"
+            )
+            await self._send_system(ws, stats)
+            return
+
+        await ws.send(
+            json.dumps(
+                {
+                    "schema_version": SCHEMA_VERSION,
+                    "type": "error",
+                    "message": f"unknown command: {cmd}",
+                }
+            )
+        )
 
     async def handler(self, ws: WebSocketServerProtocol) -> None:
         self.clients.add(ws)
@@ -90,31 +156,59 @@ class RoomServer:
                 try:
                     event = json.loads(raw)
                 except json.JSONDecodeError:
-                    await ws.send(json.dumps({"type": "error", "message": "invalid json"}))
+                    await ws.send(
+                        json.dumps(
+                            {
+                                "schema_version": SCHEMA_VERSION,
+                                "type": "error",
+                                "message": "invalid json",
+                            }
+                        )
+                    )
+                    continue
+
+                valid, err = validate_inbound_event(event)
+                if not valid:
+                    await ws.send(
+                        json.dumps(
+                            {
+                                "schema_version": SCHEMA_VERSION,
+                                "type": "error",
+                                "message": err,
+                            }
+                        )
+                    )
                     continue
 
                 etype = event.get("type")
                 if etype == "join":
-                    sender_id = event.get("sender", {}).get("id", "anon")
+                    sender_id = str(event.get("sender", {}).get("id", "anon"))
                     self.usernames[ws] = sender_id
                     self._log("join", {"sender_id": sender_id})
                     await self._broadcast(
-                        {"type": "room.state", "users": list(self.usernames.values())}
+                        {
+                            "schema_version": SCHEMA_VERSION,
+                            "type": "room.state",
+                            "users": list(self.usernames.values()),
+                            "topic": self.topic,
+                        }
                     )
                     continue
 
                 if etype == "message.submit":
                     sender_id = self.usernames.get(ws, "anon")
-                    content = event.get("content", "")
+                    content = str(event.get("content", ""))
 
                     if content.startswith(self.command_prefix):
                         await self._handle_command(ws, sender_id, content)
                         continue
 
                     if self.paused:
+                        self.messages_blocked += 1
                         await ws.send(
                             json.dumps(
                                 {
+                                    "schema_version": SCHEMA_VERSION,
                                     "type": "message.blocked",
                                     "decision": {
                                         "decision": "BLOCK",
@@ -140,9 +234,11 @@ class RoomServer:
                     )
 
                     if decision.decision == "BLOCK":
+                        self.messages_blocked += 1
                         await ws.send(
                             json.dumps(
                                 {
+                                    "schema_version": SCHEMA_VERSION,
                                     "type": "message.blocked",
                                     "decision": {
                                         "decision": decision.decision,
@@ -157,10 +253,13 @@ class RoomServer:
                     if decision.decision == "REWRITE":
                         content = self.moderator.rewrite(content)
 
+                    self.messages_published += 1
                     outbound = {
+                        "schema_version": SCHEMA_VERSION,
                         "type": "message.published",
                         "sender": {"id": sender_id},
                         "content": content,
+                        "topic": self.topic,
                         "decision": {
                             "decision": decision.decision,
                             "reason_codes": decision.reason_codes,
@@ -173,7 +272,14 @@ class RoomServer:
         finally:
             self.clients.discard(ws)
             self.usernames.pop(ws, None)
-            await self._broadcast({"type": "room.state", "users": list(self.usernames.values())})
+            await self._broadcast(
+                {
+                    "schema_version": SCHEMA_VERSION,
+                    "type": "room.state",
+                    "users": list(self.usernames.values()),
+                    "topic": self.topic,
+                }
+            )
 
 
 async def main(host: str, port: int, log_path: str, policy_path: str) -> None:

@@ -3,8 +3,38 @@ from __future__ import annotations
 import argparse
 import asyncio
 import json
+from typing import Any
 
 from websockets.client import connect
+
+
+async def recv_loop(ws: Any) -> None:
+    while True:
+        evt = json.loads(await ws.recv())
+        etype = evt.get("type")
+        if etype == "message.published":
+            sender = evt.get("sender", {}).get("id", "?")
+            content = evt.get("content", "")
+            print(f"{sender}> {content}")
+        elif etype == "message.blocked":
+            print(f"BLOCKED: {evt.get('decision')}")
+        elif etype == "room.state":
+            users = ", ".join(evt.get("users", []))
+            topic = evt.get("topic", "")
+            print(f"Users: {users} | Topic: {topic}")
+        elif etype == "system":
+            print(f"[system] {evt.get('content', '')}")
+        else:
+            print(evt)
+
+
+async def send_loop(ws: Any) -> None:
+    while True:
+        line = await asyncio.to_thread(input, "")
+        text = line.strip()
+        if not text:
+            continue
+        await ws.send(json.dumps({"type": "message.submit", "content": text}))
 
 
 async def run(name: str, uri: str, message: str | None) -> None:
@@ -14,20 +44,19 @@ async def run(name: str, uri: str, message: str | None) -> None:
         if message:
             await ws.send(json.dumps({"type": "message.submit", "content": message}))
 
-        print(f"[{name}] connected to {uri}. Ctrl+C to exit.")
-        while True:
-            evt = json.loads(await ws.recv())
-            etype = evt.get("type")
-            if etype == "message.published":
-                sender = evt.get("sender", {}).get("id", "?")
-                content = evt.get("content", "")
-                print(f"{sender}> {content}")
-            elif etype == "message.blocked":
-                print(f"BLOCKED: {evt.get('decision')}")
-            elif etype == "room.state":
-                print(f"Users: {', '.join(evt.get('users', []))}")
-            else:
-                print(evt)
+        print(f"[{name}] connected to {uri}. Type messages or /commands. Ctrl+C to exit.")
+
+        recv_task = asyncio.create_task(recv_loop(ws))
+        send_task = asyncio.create_task(send_loop(ws))
+
+        done, pending = await asyncio.wait(
+            {recv_task, send_task},
+            return_when=asyncio.FIRST_EXCEPTION,
+        )
+        for task in pending:
+            task.cancel()
+        for task in done:
+            task.result()
 
 
 if __name__ == "__main__":

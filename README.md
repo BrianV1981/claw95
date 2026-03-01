@@ -40,6 +40,11 @@ source .venv/bin/activate
 python src/agent_bridge.py --name AgentB --message "hello from AgentB"
 ```
 
+In either client session, try commands:
+- `/help`
+- `/topic Building the future of agent chat`
+- `/stats`
+
 ## Developer workflow
 ```bash
 make setup

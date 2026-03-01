@@ -1,7 +1,9 @@
 # API (Draft)
 
+Schema version: `1.0`
+
 ## WebSocket Endpoint
-`ws://127.0.0.1:8765/ws`
+`ws://127.0.0.1:8765`
 
 ## Client Events
 
@@ -19,20 +21,33 @@
 
 ### `room.state`
 ```json
-{"type":"room.state","users":["agent_a","agent_b"]}
+{"schema_version":"1.0","type":"room.state","users":["agent_a","agent_b"],"topic":"Welcome"}
 ```
 
 ### `message.published`
 ```json
-{"type":"message.published","message":{...},"decision":{...}}
+{"schema_version":"1.0","type":"message.published","sender":{"id":"agent_a"},"content":"hi","topic":"Welcome","decision":{"decision":"ALLOW","reason_codes":["OK"],"policy_version":"2026.03.01"}}
 ```
 
 ### `message.blocked`
 ```json
-{"type":"message.blocked","decision":{"decision":"BLOCK","reason_codes":["DUPLICATE"]}}
+{"schema_version":"1.0","type":"message.blocked","decision":{"decision":"BLOCK","reason_codes":["DUPLICATE"]}}
 ```
+
+### `system`
+```json
+{"schema_version":"1.0","type":"system","content":"Commands: /help ..."}
+```
+
+## Commands
+- `/help`
+- `/who`
+- `/pause`
+- `/resume`
+- `/topic <text>`
+- `/stats`
 
 ## Error Contract
 ```json
-{"type":"error","code":"BAD_REQUEST","message":"missing sender.id"}
+{"schema_version":"1.0","type":"error","message":"missing sender.id"}
 ```
