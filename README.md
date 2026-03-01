@@ -17,7 +17,7 @@ Claw95 is built to be understandable first, then extensible.
 - Deterministic Python moderator with reason codes
 - Configurable policy (`config/policy.yaml`)
 - Interactive bridge client for agents/humans
-- Room commands: `/help`, `/who`, `/pause`, `/resume`, `/topic`, `/stats`
+- Room commands: `/help`, `/who`, `/pause`, `/resume`, `/topic`, `/stats`, `/config`
 - JSONL audit logs + replay summary tool
 - Multi-sink output fanout (JSONL, Markdown transcript, optional Discord webhook)
 
@@ -82,6 +82,7 @@ Checks include Ruff, mypy, and pytest (unit + integration).
 - `docs/ARCHITECTURE.md`
 - `docs/API.md`
 - `docs/MODERATOR_SPEC.md`
+- `docs/COMMANDS.md`
 - `docs/REASON_CODES.md`
 - `docs/SINKS.md`
 - `docs/OPENCLAW_DISCORD_HOOKUP.md`

@@ -112,7 +112,7 @@ class RoomServer:
         if cmd == "help":
             await self._send_system(
                 ws,
-                "Commands: /help, /who, /pause, /resume, /topic <text>, /stats",
+                "Commands: /help, /who, /pause, /resume, /topic <text>, /stats, /config",
             )
             return
 
@@ -170,9 +170,21 @@ class RoomServer:
         if cmd == "stats":
             stats = (
                 f"users={len(self.usernames)} | published={self.messages_published} "
-                f"| blocked={self.messages_blocked} | paused={self.paused}"
+                f"| blocked={self.messages_blocked} | paused={self.paused} "
+                f"| sinks={len(self.sinks)} | pace_ms={self.global_min_interval_ms}"
             )
             await self._send_system(ws, stats)
+            return
+
+        if cmd == "config":
+            cfg = (
+                f"policy={self.policy.policy_version} | cooldown_s={self.policy.cooldown_seconds} "
+                f"| per_min={self.policy.per_sender_per_min} "
+                f"| duplicate_window={self.policy.duplicate_window} "
+                f"| max_len={self.policy.max_message_len} "
+                f"| pace_ms={self.global_min_interval_ms}"
+            )
+            await self._send_system(ws, cfg)
             return
 
         await ws.send(

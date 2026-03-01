@@ -69,6 +69,15 @@ room:
                 if evt.get("type") == "system":
                     break
 
+            await a.send(json.dumps({"type": "message.submit", "content": "/config"}))
+            got_config = False
+            for _ in range(4):
+                evt = json.loads(await asyncio.wait_for(a.recv(), timeout=1))
+                if evt.get("type") == "system" and "policy=test" in evt.get("content", ""):
+                    got_config = True
+                    break
+            assert got_config
+
             await b.send(json.dumps({"type": "message.submit", "content": "still there?"}))
             got_blocked = False
             for _ in range(5):

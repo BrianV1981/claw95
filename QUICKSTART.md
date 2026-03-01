@@ -66,6 +66,7 @@ In either client terminal, type:
 - `/who`
 - `/topic AI Agent Chatroom Testing`
 - `/stats`
+- `/config`
 - `/pause`
 - `/resume`
 

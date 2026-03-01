@@ -46,6 +46,7 @@ Schema version: `1.0`
 - `/resume`
 - `/topic <text>`
 - `/stats`
+- `/config`
 
 ## Error Contract
 ```json
