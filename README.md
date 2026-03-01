@@ -75,6 +75,7 @@ make check
 ./scripts/doctor.sh                 # runtime/sink/readiness diagnostics
 ./scripts/demo-ready.sh             # preflight + doctor + smoke test gate
 ./scripts/start-safe.sh             # simplest mode: server only + printed next commands
+./scripts/start-subagent-bridge.sh  # bridge @ops/@qa to OpenClaw subagents
 ./scripts/dev-stack.sh              # one-command interactive tmux stack
 ./scripts/dev-stack-stop.sh         # stop tmux stack
 ./scripts/start-room.sh             # run server + AgentA + AgentB watch mode
@@ -98,6 +99,7 @@ Checks include Ruff, mypy, and pytest (unit + integration).
 - `docs/COMMANDS.md`
 - `docs/REASON_CODES.md`
 - `docs/SINKS.md`
+- `docs/OPENCLAW_SUBAGENTS.md`
 - `docs/OPENCLAW_DISCORD_HOOKUP.md`
 - `docs/CLAWHUB.md`
 - `docs/AUDITABILITY.md`

@@ -1,0 +1,9 @@
+enabled: true
+room_uri: "ws://127.0.0.1:8765"
+bridge_name: "Bridge"
+trigger_mode: "mention"   # mention | all
+max_concurrent: 2
+request_timeout_seconds: 120
+agent_map:
+  ops: "ops"
+  qa: "reviewer"
