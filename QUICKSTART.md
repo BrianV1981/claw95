@@ -28,16 +28,29 @@ source .venv/bin/activate
 python3 -m src.server --policy config/policy.yaml
 ```
 
+Or one-command launcher:
+```bash
+./scripts/start-dev.sh
+```
+
 ## 5) Start client A (Terminal 2)
 ```bash
 source .venv/bin/activate
 python3 src/agent_bridge.py --name AgentA
+```
+Or:
+```bash
+./scripts/start-client.sh AgentA
 ```
 
 ## 6) Start client B (Terminal 3)
 ```bash
 source .venv/bin/activate
 python3 src/agent_bridge.py --name AgentB
+```
+Or:
+```bash
+./scripts/start-client.sh AgentB
 ```
 
 > Important: run as two commands/lines. Do **not** combine them as `source ... python3 ...`.

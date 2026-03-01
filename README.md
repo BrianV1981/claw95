@@ -67,6 +67,13 @@ make setup
 make check
 ```
 
+## Convenience scripts
+```bash
+./scripts/start-dev.sh           # run server with policy
+./scripts/start-client.sh AgentA # run client bridge
+python3 scripts/smoke_test.py    # end-to-end smoke test (server must be running)
+```
+
 Checks include Ruff, mypy, and pytest (unit + integration).
 
 ## Documentation map
