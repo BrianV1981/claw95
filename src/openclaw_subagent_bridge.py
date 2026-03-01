@@ -55,12 +55,12 @@ def strip_mentions(text: str, names: list[str]) -> str:
 async def call_openclaw_agent(agent_id: str, prompt: str, timeout_s: int) -> str:
     proc = await asyncio.create_subprocess_exec(
         "openclaw",
-        "sessions",
-        "send",
+        "agent",
         "--agent",
         agent_id,
-        "--message",
+        "-m",
         prompt,
+        "--json",
         stdout=asyncio.subprocess.PIPE,
         stderr=asyncio.subprocess.PIPE,
     )
@@ -74,8 +74,20 @@ async def call_openclaw_agent(agent_id: str, prompt: str, timeout_s: int) -> str
         msg = (err.decode("utf-8", errors="ignore") or out.decode("utf-8", errors="ignore")).strip()
         return f"[bridge] subagent error: {msg[:300]}"
 
-    txt = out.decode("utf-8", errors="ignore").strip()
-    return txt or "[bridge] empty response"
+    raw = out.decode("utf-8", errors="ignore").strip()
+    if not raw:
+        return "[bridge] empty response"
+
+    try:
+        payload = json.loads(raw)
+        payloads = payload.get("result", {}).get("payloads", [])
+        if payloads and isinstance(payloads, list):
+            txt = str(payloads[0].get("text", "")).strip()
+            return txt or "[bridge] empty response"
+    except json.JSONDecodeError:
+        pass
+
+    return raw
 
 
 async def run(config_path: str) -> None:
