@@ -32,6 +32,7 @@ Fastest one-command mode:
 ```bash
 ./scripts/start-room.sh
 ```
+This runs server + two watch clients (no stdin input mode).
 
 Manual 3-terminal mode:
 

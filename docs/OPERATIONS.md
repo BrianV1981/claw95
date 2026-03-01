@@ -46,6 +46,11 @@ Run everything at once:
 ```
 This starts server + AgentA + AgentB and stops all on Ctrl+C.
 
+Optional port override:
+```bash
+CLAW95_PORT=8766 ./scripts/start-room.sh
+```
+
 ## Config change workflow
 1. Edit `config/policy.yaml`.
 2. Restart server.

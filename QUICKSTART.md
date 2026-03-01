@@ -33,10 +33,11 @@ source .venv/bin/activate
 python3 -m src.server --policy config/policy.yaml
 ```
 
-Or one-command launch for server + two clients:
+Or one-command launch for server + two watch clients:
 ```bash
 ./scripts/start-room.sh
 ```
+(Use `start-client.sh` in separate terminals for interactive typing.)
 
 Or server-only launcher:
 ```bash

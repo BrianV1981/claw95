@@ -31,14 +31,17 @@ async def recv_loop(ws: Any) -> None:
 
 async def send_loop(ws: Any) -> None:
     while True:
-        line = await asyncio.to_thread(input, "")
+        try:
+            line = await asyncio.to_thread(input, "")
+        except EOFError:
+            return
         text = line.strip()
         if not text:
             continue
         await ws.send(json.dumps({"type": "message.submit", "content": text}))
 
 
-async def run(name: str, uri: str, message: str | None, token: str) -> None:
+async def run(name: str, uri: str, message: str | None, token: str, no_input: bool) -> None:
     async with connect(uri) as ws:
         join_event = {"type": "join", "sender": {"id": name, "type": "agent"}}
         if token:
@@ -51,6 +54,11 @@ async def run(name: str, uri: str, message: str | None, token: str) -> None:
         print(f"[{name}] connected to {uri}. Type messages or /commands. Ctrl+C to exit.")
 
         recv_task = asyncio.create_task(recv_loop(ws))
+
+        if no_input:
+            await recv_task
+            return
+
         send_task = asyncio.create_task(send_loop(ws))
 
         done, pending = await asyncio.wait(
@@ -69,6 +77,7 @@ if __name__ == "__main__":
     parser.add_argument("--uri", default="ws://127.0.0.1:8765")
     parser.add_argument("--message", default=None)
     parser.add_argument("--token", default=os.getenv("CLAW95_TOKEN", ""))
+    parser.add_argument("--no-input", action="store_true")
     args = parser.parse_args()
 
-    asyncio.run(run(args.name, args.uri, args.message, args.token))
+    asyncio.run(run(args.name, args.uri, args.message, args.token, args.no_input))
