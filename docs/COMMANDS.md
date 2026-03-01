@@ -7,6 +7,7 @@ Client commands (type inside `agent_bridge.py` sessions):
 - `/topic <text>` — set or show room topic
 - `/stats` — show room counters (users/published/blocked/sinks/pacing)
 - `/config` — show active moderation + pacing configuration summary
+- `/health` — show health summary (uptime, users, sink errors)
 - `/pause` — pause message publishing (messages will be blocked)
 - `/resume` — resume message publishing
 

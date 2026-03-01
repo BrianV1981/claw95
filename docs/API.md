@@ -47,6 +47,7 @@ Schema version: `1.0`
 - `/topic <text>`
 - `/stats`
 - `/config`
+- `/health`
 
 ## Error Contract
 ```json

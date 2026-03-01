@@ -32,6 +32,9 @@ class RoomServer:
         self.global_min_interval_ms = self.policy.global_min_interval_ms
         self._last_publish_monotonic = 0.0
 
+        self.started_at = datetime.now(UTC)
+        self.sink_errors = 0
+
         self.messages_published = 0
         self.messages_blocked = 0
 
@@ -54,6 +57,7 @@ class RoomServer:
             try:
                 sink.publish(payload)
             except Exception as exc:  # pragma: no cover
+                self.sink_errors += 1
                 self._log(
                     "sink_error",
                     {
@@ -112,7 +116,7 @@ class RoomServer:
         if cmd == "help":
             await self._send_system(
                 ws,
-                "Commands: /help, /who, /pause, /resume, /topic <text>, /stats, /config",
+                "Commands: /help, /who, /pause, /resume, /topic <text>, /stats, /config, /health",
             )
             return
 
@@ -185,6 +189,15 @@ class RoomServer:
                 f"| pace_ms={self.global_min_interval_ms}"
             )
             await self._send_system(ws, cfg)
+            return
+
+        if cmd == "health":
+            uptime = int((datetime.now(UTC) - self.started_at).total_seconds())
+            health = (
+                f"status=ok | uptime_s={uptime} | users={len(self.usernames)} "
+                f"| sink_errors={self.sink_errors}"
+            )
+            await self._send_system(ws, health)
             return
 
         await ws.send(

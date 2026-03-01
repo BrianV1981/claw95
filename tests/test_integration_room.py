@@ -78,6 +78,15 @@ room:
                     break
             assert got_config
 
+            await a.send(json.dumps({"type": "message.submit", "content": "/health"}))
+            got_health = False
+            for _ in range(4):
+                evt = json.loads(await asyncio.wait_for(a.recv(), timeout=1))
+                if evt.get("type") == "system" and "status=ok" in evt.get("content", ""):
+                    got_health = True
+                    break
+            assert got_health
+
             await b.send(json.dumps({"type": "message.submit", "content": "still there?"}))
             got_blocked = False
             for _ in range(5):

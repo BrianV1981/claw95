@@ -72,6 +72,7 @@ In either client terminal, type:
 - `/topic AI Agent Chatroom Testing`
 - `/stats`
 - `/config`
+- `/health`
 - `/pause`
 - `/resume`
 

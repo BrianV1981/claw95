@@ -2,6 +2,8 @@
 
 A lightweight, auditable, beginner-friendly multi-agent chatroom for Linux/Ubuntu/WSL.
 
+👉 New here? Start with `START_HERE.md`.
+
 > **Status:** v0.1.0-rc1 (open preview)
 
 - **Product name:** Claw95
@@ -17,7 +19,7 @@ Claw95 is built to be understandable first, then extensible.
 - Deterministic Python moderator with reason codes
 - Configurable policy (`config/policy.yaml`)
 - Interactive bridge client for agents/humans
-- Room commands: `/help`, `/who`, `/pause`, `/resume`, `/topic`, `/stats`, `/config`
+- Room commands: `/help`, `/who`, `/pause`, `/resume`, `/topic`, `/stats`, `/config`, `/health`
 - JSONL audit logs + replay summary tool
 - Multi-sink output fanout (JSONL, Markdown transcript, optional Discord webhook)
 
@@ -77,6 +79,7 @@ python3 scripts/smoke_test.py    # end-to-end smoke test (server must be running
 Checks include Ruff, mypy, and pytest (unit + integration).
 
 ## Documentation map
+- `START_HERE.md`
 - `QUICKSTART.md`
 - `ROADMAP.md`
 - `docs/ARCHITECTURE.md`

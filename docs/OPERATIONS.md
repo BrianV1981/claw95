@@ -6,6 +6,7 @@
 - `/topic <text>`
 - `/stats`
 - `/config`
+- `/health`
 - `/pause`
 - `/resume`
 
