@@ -37,6 +37,8 @@ Bridge will call OpenClaw and post responses back into room as:
 - `trigger_mode`: `mention` or `all`
 - `max_concurrent`: in-flight subagent calls
 - `request_timeout_seconds`
+- `session_mode`: `room` (stable per-agent room memory) or `stateless` (new session per request)
+- `response_max_chars`: cap long replies
 - `agent_map`
 
 ## Notes

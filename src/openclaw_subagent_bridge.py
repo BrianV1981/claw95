@@ -18,6 +18,8 @@ class BridgeConfig:
     trigger_mode: str
     max_concurrent: int
     request_timeout_seconds: int
+    session_mode: str
+    response_max_chars: int
     agent_map: dict[str, str]
 
 
@@ -29,6 +31,8 @@ def load_config(path: str) -> BridgeConfig:
         trigger_mode=str(data.get("trigger_mode", "mention")),
         max_concurrent=int(data.get("max_concurrent", 2)),
         request_timeout_seconds=int(data.get("request_timeout_seconds", 120)),
+        session_mode=str(data.get("session_mode", "room")),
+        response_max_chars=int(data.get("response_max_chars", 1200)),
         agent_map={str(k): str(v) for k, v in (data.get("agent_map", {}) or {}).items()},
     )
 
@@ -52,12 +56,19 @@ def strip_mentions(text: str, names: list[str]) -> str:
     return " ".join(out.split())
 
 
-async def call_openclaw_agent(agent_id: str, prompt: str, timeout_s: int) -> str:
+async def call_openclaw_agent(
+    agent_id: str,
+    prompt: str,
+    timeout_s: int,
+    session_id: str,
+) -> str:
     proc = await asyncio.create_subprocess_exec(
         "openclaw",
         "agent",
         "--agent",
         agent_id,
+        "--session-id",
+        session_id,
         "-m",
         prompt,
         "--json",
@@ -124,24 +135,37 @@ async def run(config_path: str) -> None:
 
             clean_prompt = strip_mentions(content, list(cfg.agent_map.keys()))
 
-            async def handle_target(target_name: str, prompt_text: str) -> None:
+            async def handle_target(target_name: str, prompt_text: str, sender_name: str) -> None:
                 agent_id = cfg.agent_map[target_name]
+                session_id = (
+                    f"claw95-{target_name}"
+                    if cfg.session_mode == "room"
+                    else f"claw95-{target_name}-{int(asyncio.get_running_loop().time() * 1000)}"
+                )
+                wrapped_prompt = (
+                    f"You are {target_name} in a local AI chatroom. "
+                    f"Respond clearly and concisely in <= 8 bullets or short paragraphs. "
+                    f"Stay on-topic to the latest user request only. "
+                    f"Requester: {sender_name}. Request: {prompt_text}"
+                )
                 async with sem:
                     reply = await call_openclaw_agent(
                         agent_id,
-                        prompt_text,
+                        wrapped_prompt,
                         cfg.request_timeout_seconds,
+                        session_id,
                     )
+                    trimmed = reply[: cfg.response_max_chars]
                     await ws.send(
                         json.dumps(
                             {
                                 "type": "message.submit",
-                                "content": f"[{target_name}] {reply}",
+                                "content": f"[{target_name}] {trimmed}",
                             }
                         )
                     )
 
-            await asyncio.gather(*(handle_target(t, clean_prompt) for t in targets))
+            await asyncio.gather(*(handle_target(t, clean_prompt, sender) for t in targets))
 
 
 if __name__ == "__main__":
