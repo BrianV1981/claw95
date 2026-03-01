@@ -17,6 +17,11 @@ pip install -e .[dev]
 ./scripts/preflight.sh
 ```
 
+## Doctor check (runtime + sink readiness)
+```bash
+./scripts/doctor.sh
+```
+
 ## Launch room + clients
 Fastest one-command mode:
 ```bash

@@ -26,6 +26,12 @@ Before demos or review sessions:
 ./scripts/preflight.sh
 ```
 
+## Doctor
+For runtime + sink diagnostics:
+```bash
+./scripts/doctor.sh
+```
+
 ## Restart workflow
 1. Stop server (`Ctrl+C` in server terminal).
 2. Restart:

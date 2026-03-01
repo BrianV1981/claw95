@@ -6,6 +6,12 @@ Run all quality gates:
 make check
 ```
 
+Quick readiness checks:
+```bash
+./scripts/preflight.sh
+./scripts/doctor.sh
+```
+
 Equivalent manual commands:
 ```bash
 ruff check .
