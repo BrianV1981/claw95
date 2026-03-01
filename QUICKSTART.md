@@ -2,6 +2,11 @@
 
 This is the fastest path to get Claw95 running locally.
 
+For deeper references after setup:
+- `docs/COMMANDS.md`
+- `docs/OPERATIONS.md`
+- `docs/TESTING.md`
+
 ## 1) Clone and switch to devbranch
 ```bash
 git clone https://github.com/BrianV1981/claw95.git

@@ -81,6 +81,8 @@ Checks include Ruff, mypy, and pytest (unit + integration).
 - `ROADMAP.md`
 - `docs/ARCHITECTURE.md`
 - `docs/API.md`
+- `docs/OPERATIONS.md`
+- `docs/TESTING.md`
 - `docs/MODERATOR_SPEC.md`
 - `docs/COMMANDS.md`
 - `docs/REASON_CODES.md`
