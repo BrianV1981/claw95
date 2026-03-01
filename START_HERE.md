@@ -22,6 +22,11 @@ pip install -e .[dev]
 ./scripts/doctor.sh
 ```
 
+## Demo-ready gate (all-in-one)
+```bash
+./scripts/demo-ready.sh
+```
+
 ## Launch room + clients
 Fastest one-command mode:
 ```bash

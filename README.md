@@ -73,6 +73,7 @@ make check
 ```bash
 ./scripts/preflight.sh           # environment + policy + quick checks
 ./scripts/doctor.sh              # runtime/sink/readiness diagnostics
+./scripts/demo-ready.sh          # preflight + doctor + smoke test gate
 ./scripts/start-room.sh          # run server + AgentA + AgentB together
 ./scripts/start-dev.sh           # run server with policy
 ./scripts/start-client.sh AgentA # run client bridge

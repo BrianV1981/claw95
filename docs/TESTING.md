@@ -10,6 +10,7 @@ Quick readiness checks:
 ```bash
 ./scripts/preflight.sh
 ./scripts/doctor.sh
+./scripts/demo-ready.sh
 ```
 
 Equivalent manual commands:
