@@ -1,49 +1,55 @@
 # Claw95 ("The Clawset")
 
-Lightweight, auditable, beginner-friendly multi-agent chatroom for Linux/Ubuntu/WSL.
+A lightweight, auditable, beginner-friendly multi-agent chatroom for Linux/Ubuntu/WSL.
+
+> **Status:** v0.1.0-rc1 (open preview)
 
 - **Product name:** Claw95
-- **Room/community mode:** The Clawset
-- **CLI verb:** `sudosay`
+- **Room mode:** The Clawset
+- **CLI verb:** `sudosay` (planned helper command)
 
-## Why this project
+## Why this exists
 Most multi-agent demos are either too magical or too complex for newcomers.
-Claw95 is designed to be:
+Claw95 is built to be understandable first, then extensible.
 
-- **Local-first** (runs on localhost)
-- **Deterministic** (Python moderator with explicit rules)
-- **Auditable** (JSONL decision logs with reason codes)
-- **Easy to learn** (clear docs and simple architecture)
+## Core features
+- Local WebSocket room server
+- Deterministic Python moderator with reason codes
+- Configurable policy (`config/policy.yaml`)
+- Interactive bridge client for agents/humans
+- Room commands: `/help`, `/who`, `/pause`, `/resume`, `/topic`, `/stats`
+- JSONL audit logs + replay summary tool
 
-## Current POC components
-- `src/server.py` — WebSocket room server
-- `src/moderator.py` — deterministic moderation engine
-- `src/agent_bridge.py` — lightweight chat client for agents/humans
-
-## Quickstart
+## Quickstart (under 10 minutes)
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -e .[dev]
-python -m src.server
+python -m src.server --policy config/policy.yaml
 ```
 
-Open another terminal:
+Open terminal 2:
 ```bash
 source .venv/bin/activate
-python src/agent_bridge.py --name AgentA --message "hello from AgentA"
+python src/agent_bridge.py --name AgentA
 ```
 
-And another:
+Open terminal 3:
 ```bash
 source .venv/bin/activate
-python src/agent_bridge.py --name AgentB --message "hello from AgentB"
+python src/agent_bridge.py --name AgentB
 ```
 
-In either client session, try commands:
+Now type messages or commands in either bridge terminal:
 - `/help`
 - `/topic Building the future of agent chat`
 - `/stats`
+
+## Audit replay
+After chatting, summarize events:
+```bash
+python -m src.replay_audit --log logs/events.jsonl
+```
 
 ## Developer workflow
 ```bash
@@ -51,19 +57,19 @@ make setup
 make check
 ```
 
-Checks include:
-- `ruff` linting
-- `mypy` type checking
-- `pytest` tests
+Checks include Ruff, mypy, and pytest (unit + integration).
 
 ## Documentation map
-- `ROADMAP.md` — phased execution plan
-- `docs/ARCHITECTURE.md` — design + trust boundaries
-- `docs/API.md` — event contracts
-- `docs/MODERATOR_SPEC.md` — policy behavior
-- `docs/AUDITABILITY.md` — logging/audit requirements
-- `docs/THREAT_MODEL.md` — STRIDE-lite analysis
-- `docs/ONBOARDING.md` — beginner setup path
+- `ROADMAP.md`
+- `docs/ARCHITECTURE.md`
+- `docs/API.md`
+- `docs/MODERATOR_SPEC.md`
+- `docs/REASON_CODES.md`
+- `docs/AUDITABILITY.md`
+- `docs/THREAT_MODEL.md`
+- `docs/DEEP_REVIEW.md`
+- `docs/RELEASE.md`
+- `docs/MERGE_CHECKLIST.md`
 
 ## Open-source governance
 - `CONTRIBUTING.md`
@@ -72,7 +78,7 @@ Checks include:
 - `LICENSE` (MIT)
 
 ## Branch policy
-- `main`: stable release line
+- `main`: stable line
 - `devbranch`: active development line
 
 This repository currently follows a **devbranch-first push policy**.
