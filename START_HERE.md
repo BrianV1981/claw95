@@ -13,6 +13,13 @@ pip install -e .[dev]
 ```
 
 ## Launch room + clients
+Fastest one-command mode:
+```bash
+./scripts/start-room.sh
+```
+
+Manual 3-terminal mode:
+
 Terminal 1:
 ```bash
 ./scripts/start-dev.sh

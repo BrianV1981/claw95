@@ -71,6 +71,7 @@ make check
 
 ## Convenience scripts
 ```bash
+./scripts/start-room.sh          # run server + AgentA + AgentB together
 ./scripts/start-dev.sh           # run server with policy
 ./scripts/start-client.sh AgentA # run client bridge
 python3 scripts/smoke_test.py    # end-to-end smoke test (server must be running)
