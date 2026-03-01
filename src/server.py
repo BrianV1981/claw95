@@ -43,7 +43,7 @@ class RoomServer:
     async def _broadcast(self, msg: dict[str, Any]) -> None:
         dead = []
         wire = json.dumps(msg, ensure_ascii=False)
-        for client in self.clients:
+        for client in list(self.clients):
             try:
                 await client.send(wire)
             except Exception:
