@@ -34,6 +34,7 @@ class RoomServer:
 
         self.started_at = datetime.now(UTC)
         self.sink_errors = 0
+        self.auth_failures = 0
 
         self.messages_published = 0
         self.messages_blocked = 0
@@ -193,9 +194,19 @@ class RoomServer:
 
         if cmd == "health":
             uptime = int((datetime.now(UTC) - self.started_at).total_seconds())
+            policy_hash = hashlib.sha256(
+                (
+                    f"{self.policy.policy_version}|{self.policy.cooldown_seconds}|"
+                    f"{self.policy.per_sender_per_min}|{self.policy.duplicate_window}|"
+                    f"{self.policy.max_message_len}|{self.global_min_interval_ms}|"
+                    f"{bool(self.policy.shared_secret)}|{','.join(self.policy.allowed_senders)}"
+                ).encode()
+            ).hexdigest()[:12]
             health = (
                 f"status=ok | uptime_s={uptime} | users={len(self.usernames)} "
-                f"| sink_errors={self.sink_errors}"
+                f"| sink_errors={self.sink_errors} | auth_failures={self.auth_failures} "
+                f"| auth_mode={'shared_secret' if self.policy.shared_secret else 'open'} "
+                f"| policy_hash={policy_hash}"
             )
             await self._send_system(ws, health)
             return
@@ -245,9 +256,31 @@ class RoomServer:
                 if etype == "join":
                     sender_id = str(event.get("sender", {}).get("id", "anon"))
 
+                    if self.policy.allowed_senders and sender_id not in self.policy.allowed_senders:
+                        self.auth_failures += 1
+                        self._log(
+                            "auth_failed",
+                            {"sender_id": sender_id, "reason": "sender_not_allowed"},
+                        )
+                        await ws.send(
+                            json.dumps(
+                                {
+                                    "schema_version": SCHEMA_VERSION,
+                                    "type": "error",
+                                    "message": "sender not allowed",
+                                }
+                            )
+                        )
+                        continue
+
                     if self.policy.shared_secret:
                         got = str(event.get("auth", {}).get("token", ""))
                         if got != self.policy.shared_secret:
+                            self.auth_failures += 1
+                            self._log(
+                                "auth_failed",
+                                {"sender_id": sender_id, "reason": "bad_token"},
+                            )
                             await ws.send(
                                 json.dumps(
                                     {

@@ -13,6 +13,7 @@ room:
   start_paused: false
   global_min_interval_ms: 1500
   shared_secret: ""
+  allowed_senders: []
 
 sinks:
   jsonl_enabled: true

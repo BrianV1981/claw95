@@ -92,6 +92,7 @@ Edit `config/policy.yaml`:
 ```yaml
 room:
   shared_secret: "my-secret"
+  allowed_senders: ["AgentA", "AgentB"]
 ```
 Then connect clients with token:
 ```bash

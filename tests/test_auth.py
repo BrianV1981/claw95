@@ -25,6 +25,7 @@ room:
   command_prefix: "/"
   start_paused: false
   shared_secret: "secret123"
+  allowed_senders: ["Good"]
 ''',
         encoding="utf-8",
     )
@@ -39,7 +40,7 @@ room:
             await ws.send(json.dumps({"type": "join", "sender": {"id": "Bad"}}))
             evt = json.loads(await asyncio.wait_for(ws.recv(), timeout=1))
             assert evt["type"] == "error"
-            assert evt["message"] == "auth failed"
+            assert evt["message"] == "sender not allowed"
 
         async with connect(uri) as ws2:
             await ws2.send(

@@ -41,4 +41,5 @@ tail -f logs/events.jsonl logs/mirror.jsonl logs/transcript.md
 ## Safety notes
 - Keep server bound to localhost unless intentionally exposing through a secured proxy.
 - Enable `room.shared_secret` for client join auth if multiple local users/processes can connect.
+- Optionally restrict identities with `room.allowed_senders` (allowlist of sender IDs).
 - Do not store webhook secrets in public repos.

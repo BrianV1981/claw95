@@ -24,6 +24,8 @@ room:
   command_prefix: "!"
   start_paused: true
   global_min_interval_ms: 900
+  shared_secret: "abc"
+  allowed_senders: ["AgentA", "AgentB"]
 """,
         encoding="utf-8",
     )
@@ -34,3 +36,5 @@ room:
     assert p.command_prefix == "!"
     assert p.start_paused is True
     assert p.global_min_interval_ms == 900
+    assert p.shared_secret == "abc"
+    assert p.allowed_senders == ["AgentA", "AgentB"]

@@ -18,6 +18,7 @@ class Policy:
     start_paused: bool
     global_min_interval_ms: int
     shared_secret: str
+    allowed_senders: list[str]
     sinks: dict[str, object]
 
 
@@ -32,6 +33,7 @@ DEFAULT_POLICY = Policy(
     start_paused=False,
     global_min_interval_ms=0,
     shared_secret="",
+    allowed_senders=[],
     sinks={
         "jsonl_enabled": False,
         "jsonl_path": "logs/mirror.jsonl",
@@ -71,5 +73,6 @@ def load_policy(path: str | Path) -> Policy:
             room.get("global_min_interval_ms", DEFAULT_POLICY.global_min_interval_ms)
         ),
         shared_secret=str(room.get("shared_secret", DEFAULT_POLICY.shared_secret)),
+        allowed_senders=list(room.get("allowed_senders", DEFAULT_POLICY.allowed_senders)),
         sinks=default_sinks,
     )
