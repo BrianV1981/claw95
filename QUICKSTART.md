@@ -27,19 +27,24 @@ make check
 ```
 Expected: lint + typecheck + tests pass.
 
-## 4) Start server (Terminal 1)
+## 4) Recommended: one-command interactive stack (tmux)
 ```bash
-source .venv/bin/activate
-python3 -m src.server --policy config/policy.yaml
+./scripts/dev-stack.sh
+tmux attach -t claw95
+```
+This opens server + AgentA + AgentB in one tmux session (no terminal juggling).
+
+Stop it later with:
+```bash
+./scripts/dev-stack-stop.sh
 ```
 
-Or one-command launch for server + two watch clients:
+## 5) Alternative launch modes
+Server + two watch clients:
 ```bash
 ./scripts/start-room.sh
 ```
-(Use `start-client.sh` in separate terminals for interactive typing.)
-
-Or server-only launcher:
+Server-only launcher:
 ```bash
 ./scripts/start-dev.sh
 ```

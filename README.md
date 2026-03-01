@@ -71,13 +71,15 @@ make check
 
 ## Convenience scripts
 ```bash
-./scripts/preflight.sh           # environment + policy + quick checks
-./scripts/doctor.sh              # runtime/sink/readiness diagnostics
-./scripts/demo-ready.sh          # preflight + doctor + smoke test gate
-./scripts/start-room.sh          # run server + AgentA + AgentB together
-./scripts/start-dev.sh           # run server with policy
-./scripts/start-client.sh AgentA # run client bridge
-python3 scripts/smoke_test.py    # end-to-end smoke test (server must be running)
+./scripts/preflight.sh              # environment + policy + quick checks
+./scripts/doctor.sh                 # runtime/sink/readiness diagnostics
+./scripts/demo-ready.sh             # preflight + doctor + smoke test gate
+./scripts/dev-stack.sh              # one-command interactive tmux stack
+./scripts/dev-stack-stop.sh         # stop tmux stack
+./scripts/start-room.sh             # run server + AgentA + AgentB watch mode
+./scripts/start-dev.sh              # run server with policy
+./scripts/start-client.sh AgentA    # run client bridge (interactive)
+python3 scripts/smoke_test.py       # end-to-end smoke test (server must be running)
 ```
 
 Checks include Ruff, mypy, and pytest (unit + integration).

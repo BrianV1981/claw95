@@ -40,15 +40,26 @@ For runtime + sink diagnostics:
    ```
 
 ## Fast local demo mode
-Run everything at once:
+Preferred (interactive, one terminal via tmux):
+```bash
+./scripts/dev-stack.sh
+tmux attach -t claw95
+```
+Stop:
+```bash
+./scripts/dev-stack-stop.sh
+```
+
+Watch-only mode:
 ```bash
 ./scripts/start-room.sh
 ```
-This starts server + AgentA + AgentB and stops all on Ctrl+C.
+This starts server + AgentA + AgentB watch clients and stops all on Ctrl+C.
 
 Optional port override:
 ```bash
 CLAW95_PORT=8766 ./scripts/start-room.sh
+CLAW95_PORT=8766 ./scripts/dev-stack.sh
 ```
 
 ## Config change workflow

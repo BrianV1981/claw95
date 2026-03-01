@@ -28,7 +28,17 @@ pip install -e .[dev]
 ```
 
 ## Launch room + clients
-Fastest one-command mode:
+Recommended one-command interactive mode (single terminal window via tmux):
+```bash
+./scripts/dev-stack.sh
+```
+Then attach:
+```bash
+tmux attach -t claw95
+```
+This gives server + AgentA + AgentB in panes.
+
+Quick watch mode:
 ```bash
 ./scripts/start-room.sh
 ```
