@@ -34,11 +34,12 @@ Expected: lint + typecheck + tests pass.
 This starts server only and prints exact AgentA/AgentB commands.
 
 ## 5) Alternative launch modes
-One-command interactive tmux stack:
+One-command interactive tmux stack (4 panes):
 ```bash
 ./scripts/dev-stack.sh
 tmux attach -t claw95
 ```
+Panes: server, subagent bridge, User client, logs tail.
 Stop it later with:
 ```bash
 ./scripts/dev-stack-stop.sh

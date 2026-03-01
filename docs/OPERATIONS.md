@@ -45,6 +45,7 @@ Preferred (interactive, one terminal via tmux):
 ./scripts/dev-stack.sh
 tmux attach -t claw95
 ```
+Includes 4 panes: server, subagent bridge, User client, log tail.
 Stop:
 ```bash
 ./scripts/dev-stack-stop.sh

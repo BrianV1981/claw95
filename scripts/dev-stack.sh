@@ -2,10 +2,11 @@
 set -euo pipefail
 
 # One-command interactive stack using tmux.
-# Creates a tmux session with 3 panes:
+# Creates a 2x2 session with 4 panes:
 #   pane 0: server
-#   pane 1: AgentA client
-#   pane 2: AgentB client
+#   pane 1: OpenClaw subagent bridge
+#   pane 2: interactive user client
+#   pane 3: log tail
 
 SESSION="${CLAW95_SESSION:-claw95}"
 PORT="${CLAW95_PORT:-8765}"
@@ -47,15 +48,19 @@ tmux new-session -d -s "$SESSION" -n room
 # Pane 0: server
 _tmux_cmd "room.0" "cd '$ROOT' && source '$VENV_ACT' && python3 -m src.server --port $PORT --policy config/policy.yaml"
 
-# Split vertically -> pane 1
+# Pane 1: bridge
  tmux split-window -h -t "$SESSION:room.0"
-_tmux_cmd "room.1" "cd '$ROOT' && source '$VENV_ACT' && python3 src/agent_bridge.py --name AgentA --uri ws://127.0.0.1:$PORT"
+_tmux_cmd "room.1" "cd '$ROOT' && source '$VENV_ACT' && while true; do python3 -m src.openclaw_subagent_bridge --config config/subagent_bridge.yaml || true; echo '[bridge] reconnecting in 2s...'; sleep 2; done"
 
-# Split bottom of pane 1 -> pane 2
+# Pane 2: interactive user client
+ tmux split-window -v -t "$SESSION:room.0"
+_tmux_cmd "room.2" "cd '$ROOT' && source '$VENV_ACT' && python3 src/agent_bridge.py --name User --uri ws://127.0.0.1:$PORT"
+
+# Pane 3: logs tail
  tmux split-window -v -t "$SESSION:room.1"
-_tmux_cmd "room.2" "cd '$ROOT' && source '$VENV_ACT' && python3 src/agent_bridge.py --name AgentB --uri ws://127.0.0.1:$PORT"
+_tmux_cmd "room.3" "cd '$ROOT' && tail -f logs/events.jsonl logs/transcript.md"
 
-# Nice layout
+# Nice 2x2 layout
  tmux select-layout -t "$SESSION:room" tiled
 
 echo "Started tmux session '$SESSION' on port $PORT"

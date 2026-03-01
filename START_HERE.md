@@ -42,7 +42,8 @@ Then attach:
 ```bash
 tmux attach -t claw95
 ```
-This gives server + AgentA + AgentB in panes.
+This gives 4 panes: server + subagent bridge + interactive User + logs.
+Use `@ops ...` and `@qa ...` in the User pane.
 
 Quick watch mode:
 ```bash
