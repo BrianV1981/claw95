@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import time
-from collections import deque, defaultdict
+from collections import defaultdict, deque
 from dataclasses import dataclass
 
 

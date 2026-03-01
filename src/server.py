@@ -3,11 +3,11 @@ from __future__ import annotations
 import argparse
 import asyncio
 import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
-from websockets.server import serve, WebSocketServerProtocol
+from websockets.server import WebSocketServerProtocol, serve
 
 from moderator import Moderator
 
@@ -22,7 +22,7 @@ class RoomServer:
 
     def _log(self, event_type: str, payload: dict[str, Any]) -> None:
         row = {
-            "ts": datetime.now(timezone.utc).isoformat(),
+            "ts": datetime.now(UTC).isoformat(),
             "event_type": event_type,
             **payload,
         }
@@ -56,7 +56,9 @@ class RoomServer:
                     sender_id = event.get("sender", {}).get("id", "anon")
                     self.usernames[ws] = sender_id
                     self._log("join", {"sender_id": sender_id})
-                    await self._broadcast({"type": "room.state", "users": list(self.usernames.values())})
+                    await self._broadcast(
+                        {"type": "room.state", "users": list(self.usernames.values())}
+                    )
                     continue
 
                 if etype == "message.submit":
