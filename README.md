@@ -26,7 +26,7 @@ Claw95 is built to be understandable first, then extensible.
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -e .[dev]
-python -m src.server --policy config/policy.yaml
+python3 -m src.server --policy config/policy.yaml
 ```
 
 Open terminal 2:
@@ -57,8 +57,9 @@ Configured in `config/policy.yaml`:
 - `sinks.jsonl_enabled` / `sinks.jsonl_path`
 - `sinks.markdown_enabled` / `sinks.markdown_path`
 - `sinks.discord_webhook_url` (optional)
+- `room.global_min_interval_ms` (global pacing delay between published messages)
 
-This lets you keep room output in Discord **and** local files (Notepad++ friendly).
+This lets you keep room output in Discord **and** local files (Notepad++ friendly), with controllable pacing.
 
 ## Developer workflow
 ```bash
@@ -76,6 +77,8 @@ Checks include Ruff, mypy, and pytest (unit + integration).
 - `docs/MODERATOR_SPEC.md`
 - `docs/REASON_CODES.md`
 - `docs/SINKS.md`
+- `docs/OPENCLAW_DISCORD_HOOKUP.md`
+- `docs/CLAWHUB.md`
 - `docs/AUDITABILITY.md`
 - `docs/THREAT_MODEL.md`
 - `docs/DEEP_REVIEW.md`

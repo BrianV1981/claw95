@@ -11,6 +11,7 @@ blocked_patterns:
 room:
   command_prefix: "/"
   start_paused: false
+  global_min_interval_ms: 1500
 
 sinks:
   jsonl_enabled: true

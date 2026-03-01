@@ -4,6 +4,7 @@ import argparse
 import asyncio
 import hashlib
 import json
+import time
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -28,6 +29,8 @@ class RoomServer:
         self.paused = self.policy.start_paused
         self.topic = "Welcome to The Clawset"
         self.sinks: list[Sink] = build_sinks(self.policy.sinks)
+        self.global_min_interval_ms = self.policy.global_min_interval_ms
+        self._last_publish_monotonic = 0.0
 
         self.messages_published = 0
         self.messages_blocked = 0
@@ -83,6 +86,18 @@ class RoomServer:
                 }
             )
         )
+
+    async def _apply_global_pacing(self) -> None:
+        if self.global_min_interval_ms <= 0:
+            return
+
+        now = time.monotonic()
+        min_interval_s = self.global_min_interval_ms / 1000.0
+        delta = now - self._last_publish_monotonic
+        if delta < min_interval_s:
+            await asyncio.sleep(min_interval_s - delta)
+
+        self._last_publish_monotonic = time.monotonic()
 
     async def _handle_command(
         self,
@@ -288,6 +303,7 @@ class RoomServer:
                         },
                     }
                     self._log("message_published", outbound)
+                    await self._apply_global_pacing()
                     await self._broadcast(outbound)
 
         finally:

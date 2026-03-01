@@ -16,6 +16,7 @@ class Policy:
     blocked_patterns: list[str]
     command_prefix: str
     start_paused: bool
+    global_min_interval_ms: int
     sinks: dict[str, object]
 
 
@@ -28,6 +29,7 @@ DEFAULT_POLICY = Policy(
     blocked_patterns=["rm -rf", "DROP TABLE", "sudo reboot"],
     command_prefix="/",
     start_paused=False,
+    global_min_interval_ms=0,
     sinks={
         "jsonl_enabled": False,
         "jsonl_path": "logs/mirror.jsonl",
@@ -63,5 +65,8 @@ def load_policy(path: str | Path) -> Policy:
         blocked_patterns=list(data.get("blocked_patterns", DEFAULT_POLICY.blocked_patterns)),
         command_prefix=str(room.get("command_prefix", DEFAULT_POLICY.command_prefix)),
         start_paused=bool(room.get("start_paused", DEFAULT_POLICY.start_paused)),
+        global_min_interval_ms=int(
+            room.get("global_min_interval_ms", DEFAULT_POLICY.global_min_interval_ms)
+        ),
         sinks=default_sinks,
     )

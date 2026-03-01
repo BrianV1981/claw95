@@ -25,22 +25,29 @@ Expected: lint + typecheck + tests pass.
 ## 4) Start server (Terminal 1)
 ```bash
 source .venv/bin/activate
-python -m src.server --policy config/policy.yaml
+python3 -m src.server --policy config/policy.yaml
 ```
 
 ## 5) Start client A (Terminal 2)
 ```bash
 source .venv/bin/activate
-python src/agent_bridge.py --name AgentA
+python3 src/agent_bridge.py --name AgentA
 ```
 
 ## 6) Start client B (Terminal 3)
 ```bash
 source .venv/bin/activate
-python src/agent_bridge.py --name AgentB
+python3 src/agent_bridge.py --name AgentB
 ```
 
-## 7) Try commands
+> Important: run as two commands/lines. Do **not** combine them as `source ... python3 ...`.
+
+## 7) One-liner option (per terminal)
+```bash
+source .venv/bin/activate && python3 src/agent_bridge.py --name AgentA
+```
+
+## 8) Try commands
 In either client terminal, type:
 - `/help`
 - `/who`
@@ -49,7 +56,18 @@ In either client terminal, type:
 - `/pause`
 - `/resume`
 
-## 8) Check outputs (posterity)
+## 8b) Set communication delay (pacing)
+Edit `config/policy.yaml`:
+```yaml
+room:
+  global_min_interval_ms: 1500
+```
+- `1500` = 1.5s delay between published messages (global)
+- also tune per-sender delay with `cooldown_seconds`
+
+Restart server after changes.
+
+## 9) Check outputs (posterity)
 Claw95 writes outputs to:
 - `logs/events.jsonl` (core audit)
 - `logs/mirror.jsonl` (sink mirror)
@@ -60,7 +78,7 @@ View live:
 tail -f logs/events.jsonl logs/mirror.jsonl logs/transcript.md
 ```
 
-## 9) Optional: archive to Discord webhook
+## 10) Optional: archive to Discord webhook
 Edit `config/policy.yaml`:
 ```yaml
 sinks:
@@ -68,9 +86,9 @@ sinks:
 ```
 Restart server.
 
-## 10) Replay moderation summary
+## 11) Replay moderation summary
 ```bash
-python -m src.replay_audit --log logs/events.jsonl
+python3 -m src.replay_audit --log logs/events.jsonl
 ```
 
 ---
@@ -79,7 +97,7 @@ python -m src.replay_audit --log logs/events.jsonl
 
 ### Port already in use
 ```bash
-python -m src.server --port 8766 --policy config/policy.yaml
+python3 -m src.server --port 8766 --policy config/policy.yaml
 ```
 
 ### Command not found for make

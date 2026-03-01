@@ -23,6 +23,7 @@ blocked_patterns: ["abc"]
 room:
   command_prefix: "!"
   start_paused: true
+  global_min_interval_ms: 900
 """,
         encoding="utf-8",
     )
@@ -32,3 +33,4 @@ room:
     assert p.per_sender_per_min == 7
     assert p.command_prefix == "!"
     assert p.start_paused is True
+    assert p.global_min_interval_ms == 900

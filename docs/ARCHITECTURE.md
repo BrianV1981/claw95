@@ -64,6 +64,7 @@ Optional:
 ## Reliability Rules
 - Max turns per thread
 - Cooldown per sender
+- Global pacing delay (`room.global_min_interval_ms`)
 - Duplicate hash suppression window
 - Hard timeout on moderation call
 
