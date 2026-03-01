@@ -69,6 +69,7 @@ make check
 Checks include Ruff, mypy, and pytest (unit + integration).
 
 ## Documentation map
+- `QUICKSTART.md`
 - `ROADMAP.md`
 - `docs/ARCHITECTURE.md`
 - `docs/API.md`
