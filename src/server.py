@@ -7,6 +7,7 @@ from collections import deque
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+from uuid import uuid4
 
 try:
     from websockets.server import WebSocketServerProtocol, serve
@@ -29,11 +30,14 @@ class RoomServer:
         self.roles = ["strategist", "critic", "researcher", "synthesizer"]
         self.active_target: str | None = None
         self.recent_messages: deque[dict[str, Any]] = deque(maxlen=20)
+        self.policy_version = "poc-v1"
 
     def _log(self, event_type: str, payload: dict[str, Any]) -> None:
         row = {
+            "event_id": str(uuid4()),
             "ts": datetime.now(timezone.utc).isoformat(),
             "event_type": event_type,
+            "policy_version": self.policy_version,
             **payload,
         }
         with self.log_path.open("a", encoding="utf-8") as f:

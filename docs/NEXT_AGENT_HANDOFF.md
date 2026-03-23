@@ -20,8 +20,9 @@ Claw95 is in early POC implementation and follows the updated GitOps Bridge doct
 Active phase branch: `dev-phase-1`
 
 Issues currently opened for phase work:
-- `#5` — `/who` and `/help` room usability commands
-- `#4` — MIT license + OSS intake policy
+- `#5` — `/who` and `/help` room usability commands (implemented)
+- `#4` — MIT license + OSS intake policy (implemented)
+- `#6` — audit log event metadata hardening (implemented)
 
 ## Completed POC Capabilities
 Tested commands currently implemented:
@@ -41,13 +42,20 @@ Room state currently includes:
 - `active_target`
 - recent in-memory message history used by summaries
 
+Audit logging now includes:
+- `event_id` (UUID)
+- `policy_version` (`poc-v1`)
+- `ts`
+- `event_type`
+- event payload fields
+
 ## Test Status
 Run:
 ```bash
 python3 -m unittest discover -s tests -v
 ```
 
-Status at last known green run: **18 tests passing**
+Status at last known green run: **19 tests passing**
 
 Coverage includes:
 - moderator decisions (malformed/policy/cooldown/rate/duplicate/rewrite)
@@ -56,17 +64,24 @@ Coverage includes:
 - target propagation on published messages
 - summary snapshot behavior including paused-room summary
 - participant listing and help command behavior
+- audit log metadata presence (`event_id`, `policy_version`)
+
+## Known External Bug (Reported During Workflow)
+`gitops promote` currently fails in upstream tool due to command runner argument conflict:
+- error: `stdout and stderr arguments may not be used with capture_output`
+
+Claw95 used manual equivalent promotion steps when needed.
 
 ## Current Missing Pieces vs POC
 - role-aware dispatch behavior beyond message target tagging
-- richer auditability fields (`event_id`, policy version, clearer metadata)
+- richer auditability fields beyond baseline metadata (e.g., room IDs, replay helpers)
 - alignment pass for older architecture/spec docs
-- repo extraction matrix still recommended if we start mining external repos systematically
+- repo extraction matrix still recommended if external-repo mining becomes systematic
 
 ## Recommended Next Slice
-1. push the MIT license + OSS intake policy slice
-2. begin minimal role dispatch behavior tied to `active_target`
-3. improve log schema for audit/replay readiness
+1. begin minimal role dispatch behavior tied to `active_target`
+2. improve log schema for replay and trace filtering
+3. add a small replay/inspect utility for JSONL events
 
 ## Documentation Rule
 No scratch-note sprawl.

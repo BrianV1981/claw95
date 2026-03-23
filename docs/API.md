@@ -91,6 +91,19 @@ Commands are sent through normal `message.submit` content:
 }
 ```
 
+## Audit Log Row (JSONL)
+Every logged event includes stable metadata:
+```json
+{
+  "event_id": "5d9ff5ce-66c0-418f-8eb4-e5a3fef8ebd4",
+  "ts": "2026-03-23T10:00:00.000000+00:00",
+  "event_type": "room_command",
+  "policy_version": "poc-v1",
+  "sender_id": "human",
+  "command": "pause"
+}
+```
+
 ### `room.who`
 ```json
 {

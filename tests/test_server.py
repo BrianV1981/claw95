@@ -130,6 +130,15 @@ class RoomServerTests(unittest.IsolatedAsyncioTestCase):
         self.assertIn("/help", help_payload["commands"])
         self.assertIn("/who", help_payload["commands"])
 
+    async def test_logs_include_event_id_and_policy_version(self) -> None:
+        await self.server.handle_event(self.ws, {"type": "message.submit", "content": "/pause"})
+
+        rows = Path(self.log_path).read_text(encoding="utf-8").strip().splitlines()
+        self.assertGreaterEqual(len(rows), 1)
+        record = json.loads(rows[0])
+        self.assertIn("event_id", record)
+        self.assertEqual(record["policy_version"], "poc-v1")
+
 
 if __name__ == "__main__":
     unittest.main()
