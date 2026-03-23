@@ -103,6 +103,15 @@ class RoomServer:
             ],
         }
 
+    def _role_prompt_payload(self, sender_id: str, content: str) -> dict[str, Any]:
+        return {
+            "type": "room.role_prompt",
+            "role": self.active_target,
+            "from_sender": sender_id,
+            "prompt": content,
+            "topic": self.topic,
+        }
+
     def _parse_command(self, content: str) -> tuple[str, str] | None:
         clean = (content or "").strip()
         if not clean.startswith("/"):
@@ -253,6 +262,11 @@ class RoomServer:
         )
         self._log("message_published", outbound)
         await self._broadcast(outbound)
+
+        if self.active_target is not None:
+            role_prompt = self._role_prompt_payload(sender_id, content)
+            self._log("role_prompt", role_prompt)
+            await self._broadcast(role_prompt)
 
     async def handler(self, ws: WebSocketServerProtocol) -> None:
         self.clients.add(ws)

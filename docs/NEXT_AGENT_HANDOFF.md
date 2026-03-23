@@ -23,6 +23,7 @@ Issues currently opened for phase work:
 - `#5` — `/who` and `/help` room usability commands (implemented)
 - `#4` — MIT license + OSS intake policy (implemented)
 - `#6` — audit log event metadata hardening (implemented)
+- `#7` — role-aware dispatch prompt event for targeted messages (implemented)
 
 ## Completed POC Capabilities
 Tested commands currently implemented:
@@ -42,6 +43,10 @@ Room state currently includes:
 - `active_target`
 - recent in-memory message history used by summaries
 
+Targeted-message behavior now includes:
+- `message.published` with `target`
+- `room.role_prompt` emission when a message is sent with an active target role
+
 Audit logging now includes:
 - `event_id` (UUID)
 - `policy_version` (`poc-v1`)
@@ -55,13 +60,14 @@ Run:
 python3 -m unittest discover -s tests -v
 ```
 
-Status at last known green run: **19 tests passing**
+Status at last known green run: **21 tests passing**
 
 Coverage includes:
 - moderator decisions (malformed/policy/cooldown/rate/duplicate/rewrite)
 - room pause/resume/topic controls
 - ask-target selection + unknown agent rejection
 - target propagation on published messages
+- role prompt emission for targeted messages
 - summary snapshot behavior including paused-room summary
 - participant listing and help command behavior
 - audit log metadata presence (`event_id`, `policy_version`)
@@ -73,15 +79,15 @@ Coverage includes:
 Claw95 used manual equivalent promotion steps when needed.
 
 ## Current Missing Pieces vs POC
-- role-aware dispatch behavior beyond message target tagging
+- actual agent execution/response flow tied to `room.role_prompt`
 - richer auditability fields beyond baseline metadata (e.g., room IDs, replay helpers)
 - alignment pass for older architecture/spec docs
 - repo extraction matrix still recommended if external-repo mining becomes systematic
 
 ## Recommended Next Slice
-1. begin minimal role dispatch behavior tied to `active_target`
-2. improve log schema for replay and trace filtering
-3. add a small replay/inspect utility for JSONL events
+1. add a small replay/inspect utility for JSONL events
+2. improve log schema for trace filtering (`room_id`, sender type, command category)
+3. start minimal agent-bridge reaction behavior for `room.role_prompt`
 
 ## Documentation Rule
 No scratch-note sprawl.

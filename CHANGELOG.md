@@ -1,5 +1,9 @@
 # Changelog
 
+## [v1.2.0] - 2026-03-23
+- Feature: Added role prompt events for targeted room messages with TDD coverage (Closes #7)
+
+
 ## [v1.1.1] - 2026-03-23
 - Fix: Added audit log event_id and policy_version metadata with TDD coverage (Closes #6)
 

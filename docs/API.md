@@ -132,6 +132,17 @@ Every logged event includes stable metadata:
 }
 ```
 
+### `room.role_prompt`
+```json
+{
+  "type": "room.role_prompt",
+  "role": "critic",
+  "from_sender": "human",
+  "prompt": "review this idea",
+  "topic": "Claw95 POC"
+}
+```
+
 ### `error`
 ```json
 {"type":"error","code":"UNKNOWN_COMMAND","message":"unknown command: /whatever"}

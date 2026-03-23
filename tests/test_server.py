@@ -139,6 +139,23 @@ class RoomServerTests(unittest.IsolatedAsyncioTestCase):
         self.assertIn("event_id", record)
         self.assertEqual(record["policy_version"], "poc-v1")
 
+    async def test_targeted_message_emits_role_prompt_for_active_target(self) -> None:
+        self.server.active_target = "critic"
+
+        await self.server.handle_event(self.ws, {"type": "message.submit", "content": "review this idea"})
+
+        payloads = [json.loads(message) for message in self.ws.sent]
+        role_prompt = next(item for item in payloads if item["type"] == "room.role_prompt")
+        self.assertEqual(role_prompt["role"], "critic")
+        self.assertIn("review this idea", role_prompt["prompt"])
+
+    async def test_untargeted_message_does_not_emit_role_prompt(self) -> None:
+        await self.server.handle_event(self.ws, {"type": "message.submit", "content": "review this idea"})
+
+        payloads = [json.loads(message) for message in self.ws.sent]
+        role_prompts = [item for item in payloads if item["type"] == "room.role_prompt"]
+        self.assertEqual(role_prompts, [])
+
 
 if __name__ == "__main__":
     unittest.main()
