@@ -7,7 +7,7 @@ import subprocess
 from typing import Any, Callable
 
 try:
-    from websockets.client import connect
+    from websockets.asyncio.client import connect
 except ModuleNotFoundError:  # pragma: no cover - allows tests without websockets installed
     connect = None
 

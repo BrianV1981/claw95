@@ -10,7 +10,8 @@ from typing import Any
 from uuid import uuid4
 
 try:
-    from websockets.server import WebSocketServerProtocol, serve
+    from websockets.asyncio.server import serve
+    from websockets.asyncio.server import ServerConnection as WebSocketServerProtocol
 except ModuleNotFoundError:  # pragma: no cover - allows unit tests without websockets installed
     WebSocketServerProtocol = Any  # type: ignore[assignment]
     serve = None

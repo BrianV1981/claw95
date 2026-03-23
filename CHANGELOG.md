@@ -1,5 +1,9 @@
 # Changelog
 
+## [v1.5.1] - 2026-03-23
+- Fix: remove deprecated websockets legacy imports (Closes #15)
+
+
 ## [v1.5.0] - 2026-03-23
 - Feature: add first-class role handoff event path (Closes #14)
 
