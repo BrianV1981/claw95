@@ -138,6 +138,9 @@ class RoomServerTests(unittest.IsolatedAsyncioTestCase):
         record = json.loads(rows[0])
         self.assertIn("event_id", record)
         self.assertEqual(record["policy_version"], "poc-v1")
+        self.assertEqual(record["room_id"], "main")
+        self.assertEqual(record["sender_type"], "human")
+        self.assertEqual(record["command_category"], "room_control")
 
     async def test_targeted_message_emits_role_prompt_for_active_target(self) -> None:
         self.server.active_target = "critic"

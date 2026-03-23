@@ -142,7 +142,7 @@ The repo should remain understandable to the next human or agent picking it up.
 ## Workflow Summary
 At a high level, development follows this pattern:
 1. open or identify the issue
-2. isolate work on a dedicated branch
+2. work inside the current phase branch
 3. write tests first
 4. implement the smallest working slice
 5. update docs immediately
@@ -150,7 +150,6 @@ At a high level, development follows this pattern:
 
 When available, this is executed through the GitOps Bridge workflow:
 - `gitops bug`
-- `gitops fix`
 - `gitops push`
 - `gitops promote`
 

@@ -31,6 +31,7 @@ class RoomServer:
         self.active_target: str | None = None
         self.recent_messages: deque[dict[str, Any]] = deque(maxlen=20)
         self.policy_version = "poc-v1"
+        self.room_id = "main"
 
     def _log(self, event_type: str, payload: dict[str, Any]) -> None:
         row = {
@@ -38,6 +39,7 @@ class RoomServer:
             "ts": datetime.now(timezone.utc).isoformat(),
             "event_type": event_type,
             "policy_version": self.policy_version,
+            "room_id": self.room_id,
             **payload,
         }
         with self.log_path.open("a", encoding="utf-8") as f:
@@ -164,7 +166,9 @@ class RoomServer:
             "room_command",
             {
                 "sender_id": sender_id,
+                "sender_type": "human",
                 "command": command,
+                "command_category": "room_control",
                 "argument": argument,
                 "paused": self.paused,
                 "topic": self.topic,

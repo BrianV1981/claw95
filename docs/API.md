@@ -99,8 +99,11 @@ Every logged event includes stable metadata:
   "ts": "2026-03-23T10:00:00.000000+00:00",
   "event_type": "room_command",
   "policy_version": "poc-v1",
+  "room_id": "main",
   "sender_id": "human",
-  "command": "pause"
+  "sender_type": "human",
+  "command": "pause",
+  "command_category": "room_control"
 }
 ```
 

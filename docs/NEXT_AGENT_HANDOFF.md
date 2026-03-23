@@ -25,6 +25,8 @@ Issues currently opened for phase work:
 - `#6` — audit log event metadata hardening (implemented)
 - `#7` — role-aware dispatch prompt event for targeted messages (implemented)
 - `#8` — agent bridge reaction to role prompts (implemented)
+- `#9` — replay/inspect utility for JSONL logs (implemented)
+- `#10` — trace filtering metadata (`room_id`, `sender_type`, `command_category`) (implemented)
 
 ## Completed POC Capabilities
 Tested commands currently implemented:
@@ -52,9 +54,15 @@ Targeted-message behavior now includes:
 Audit logging now includes:
 - `event_id` (UUID)
 - `policy_version` (`poc-v1`)
+- `room_id` (`main`)
+- `sender_type` where applicable
+- `command_category` for room commands
 - `ts`
 - `event_type`
 - event payload fields
+
+Replay utility:
+- `src/replay.py` supports loading/filtering JSONL events and printing readable summaries
 
 ## Test Status
 Run:
@@ -62,18 +70,7 @@ Run:
 python3 -m unittest discover -s tests -v
 ```
 
-Status at last known green run: **25 tests passing**
-
-Coverage includes:
-- moderator decisions (malformed/policy/cooldown/rate/duplicate/rewrite)
-- room pause/resume/topic controls
-- ask-target selection + unknown agent rejection
-- target propagation on published messages
-- role prompt emission for targeted messages
-- agent-bridge role prompt reaction logic
-- summary snapshot behavior including paused-room summary
-- participant listing and help command behavior
-- audit log metadata presence (`event_id`, `policy_version`)
+Status at last known green run: **28 tests passing**
 
 ## Known External Bug (Reported During Workflow)
 `gitops promote` currently fails in upstream tool due to command runner argument conflict:
@@ -83,18 +80,15 @@ Claw95 used manual equivalent promotion steps when needed.
 
 ## Current Missing Pieces vs POC
 - richer agent behavior beyond deterministic templated replies
-- richer auditability fields beyond baseline metadata (e.g., room IDs, replay helpers)
-- alignment pass for older architecture/spec docs
 - optional end-to-end demo/runbook for proving the board-room flow live
+- alignment pass for older architecture/spec docs
 
 ## Recommended Next Slice
-1. improve log schema for trace filtering (`room_id`, sender type, command category)
-2. add a demo runbook showing human -> target -> role prompt -> agent reply flow
-3. optionally add richer role-specific response templates or a pluggable role-behavior layer
+1. add a demo runbook showing human -> target -> role prompt -> agent reply flow
+2. optionally add richer role-specific response templates or pluggable role behavior
+3. do final doc-alignment sweep across legacy architecture/spec docs
 
 ## Documentation Rule
 No scratch-note sprawl.
 If behavior or workflow changes, update docs in the same slice.
-Prune stale or conflicting content immediately.
-in the same slice.
 Prune stale or conflicting content immediately.

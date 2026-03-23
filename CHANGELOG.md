@@ -1,5 +1,9 @@
 # Changelog
 
+## [v1.4.1] - 2026-03-23
+- Fix: Added trace filtering metadata in audit logs with TDD coverage (Closes #10)
+
+
 ## [v1.4.0] - 2026-03-23
 - Feature: Added JSONL replay utility with TDD coverage (Closes #9)
 
