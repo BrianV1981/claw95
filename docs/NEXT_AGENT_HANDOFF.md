@@ -86,8 +86,8 @@ Claw95 used manual equivalent promotion steps when needed.
 
 ## Current Missing Pieces vs POC
 - richer agent behavior beyond deterministic templated replies
-- alignment pass for older architecture/spec docs
 - optional real browser/UI or terminal UX polish for demo friendliness
+- CI / lint / packaging hardening
 
 ## Recommended Next Slice
 1. do final doc-alignment sweep across legacy architecture/spec docs
@@ -97,5 +97,8 @@ Claw95 used manual equivalent promotion steps when needed.
 ## Documentation Rule
 No scratch-note sprawl.
 If behavior or workflow changes, update docs in the same slice.
+Prune stale or conflicting content immediately.
+y.
+e slice.
 Prune stale or conflicting content immediately.
 y.

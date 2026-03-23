@@ -123,7 +123,11 @@ Important docs:
 - `docs/POC_MVP_PRD.md` — the active proof-of-concept product definition
 - `docs/WORKFLOW.md` — active development workflow and GitOps Bridge-native protocol
 - `docs/API.md` — current wire/API behavior
+- `docs/DEMO_RUNBOOK.md` — end-to-end demo steps for proving the board-room loop
+- `docs/PHASE_1_COMPLETION.md` — formal phase-close summary for the current POC milestone
 - `docs/NEXT_AGENT_HANDOFF.md` — live continuation state for the next agent/contributor
+- `docs/OSS_INTAKE.md` — licensing and third-party extraction policy for Claw95 core
+- `src/replay.py` — lightweight JSONL replay/inspect utility
 
 ---
 
