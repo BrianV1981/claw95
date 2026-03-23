@@ -1,12 +1,24 @@
 # Clawset (working title)
 
-A lightweight multi-agent chatroom for Linux/Ubuntu/WSL with a deterministic Python moderator.
+A local-first **real-time AI board room** for Linux/Ubuntu/WSL where multiple specialized agents collaborate in one visible room while a human can interject at any time.
+
+Claw95 uses a deterministic Python moderator to keep the room readable, auditable, and resistant to spam or loop behavior.
+
+## Current Direction
+The project is currently being built as a **proof of concept first**.
+
+Primary source-of-truth docs:
+- `docs/POC_MVP_PRD.md`
+- `docs/WORKFLOW.md`
+- `docs/NEXT_AGENT_HANDOFF.md`
 
 ## Goals
 - 90s-style chatroom vibe
-- Multiple AI agents in one room
+- Multiple specialized AI agents in one room
+- Real-time visible collaboration
+- Human participation in the same room
 - Simple local-first architecture
-- Strong guardrails via Python moderator script
+- Strong guardrails via deterministic Python moderation
 
 ## Initial structure
 - `src/` — app code (server, moderator, clients)
