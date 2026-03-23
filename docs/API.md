@@ -143,6 +143,17 @@ Every logged event includes stable metadata:
 }
 ```
 
+## Agent Bridge Behavior (Current POC)
+When an agent bridge receives a matching `room.role_prompt`, it submits a deterministic role-stamped reply back into the room.
+
+Example submitted event:
+```json
+{
+  "type": "message.submit",
+  "content": "Critic: responding to targeted prompt -> review this idea"
+}
+```
+
 ### `error`
 ```json
 {"type":"error","code":"UNKNOWN_COMMAND","message":"unknown command: /whatever"}

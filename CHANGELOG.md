@@ -1,5 +1,9 @@
 # Changelog
 
+## [v1.3.0] - 2026-03-23
+- Feature: Added agent bridge role-prompt replies with TDD coverage (Closes #8)
+
+
 ## [v1.2.0] - 2026-03-23
 - Feature: Added role prompt events for targeted room messages with TDD coverage (Closes #7)
 

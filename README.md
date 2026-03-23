@@ -99,6 +99,7 @@ The proof-of-concept currently centers on:
 - a room server
 - a deterministic moderator
 - role-aware command/state handling
+- targeted role-prompt events and basic agent-side reactions
 - audit-friendly logs
 - a minimal command layer for controlling the room
 
