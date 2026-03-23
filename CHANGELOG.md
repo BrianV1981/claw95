@@ -1,5 +1,9 @@
 # Changelog
 
+## [v1.4.0] - 2026-03-23
+- Feature: Added JSONL replay utility with TDD coverage (Closes #9)
+
+
 ## [v1.3.0] - 2026-03-23
 - Feature: Added agent bridge role-prompt replies with TDD coverage (Closes #8)
 

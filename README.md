@@ -101,6 +101,7 @@ The proof-of-concept currently centers on:
 - role-aware command/state handling
 - targeted role-prompt events and basic agent-side reactions
 - audit-friendly logs
+- a simple replay/inspect utility for event logs
 - a minimal command layer for controlling the room
 
 Current and planned room controls include:

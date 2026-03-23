@@ -84,16 +84,17 @@ Claw95 used manual equivalent promotion steps when needed.
 ## Current Missing Pieces vs POC
 - richer agent behavior beyond deterministic templated replies
 - richer auditability fields beyond baseline metadata (e.g., room IDs, replay helpers)
-- replay/inspect utility for JSONL events
 - alignment pass for older architecture/spec docs
 - optional end-to-end demo/runbook for proving the board-room flow live
 
 ## Recommended Next Slice
-1. add a small replay/inspect utility for JSONL events
-2. improve log schema for trace filtering (`room_id`, sender type, command category)
-3. add a demo runbook showing human -> target -> role prompt -> agent reply flow
+1. improve log schema for trace filtering (`room_id`, sender type, command category)
+2. add a demo runbook showing human -> target -> role prompt -> agent reply flow
+3. optionally add richer role-specific response templates or a pluggable role-behavior layer
 
 ## Documentation Rule
 No scratch-note sprawl.
 If behavior or workflow changes, update docs in the same slice.
+Prune stale or conflicting content immediately.
+in the same slice.
 Prune stale or conflicting content immediately.
