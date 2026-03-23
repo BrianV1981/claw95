@@ -267,7 +267,7 @@ class RoomServer:
         self._log("message_published", outbound)
         await self._broadcast(outbound)
 
-        if self.active_target is not None:
+        if self.active_target is not None and sender_id != self.active_target:
             role_prompt = self._role_prompt_payload(sender_id, content)
             self._log("role_prompt", role_prompt)
             await self._broadcast(role_prompt)

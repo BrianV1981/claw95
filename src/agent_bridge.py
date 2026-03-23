@@ -3,7 +3,8 @@ from __future__ import annotations
 import argparse
 import asyncio
 import json
-from typing import Any
+import subprocess
+from typing import Any, Callable
 
 try:
     from websockets.client import connect
@@ -24,22 +25,88 @@ def build_role_reply(role: str, prompt: str) -> str:
     return f"{role_name}: responding to targeted prompt -> {prompt}"
 
 
+def build_ollama_prompt(role: str, event: dict[str, Any]) -> str:
+    topic = event.get("topic", "")
+    prompt = event.get("prompt", "")
+    sender = event.get("from_sender", "unknown")
+    role_name = ROLE_PREFIXES.get(role, role.title())
+    return (
+        f"You are {role_name} in the Claw95 AI board room. "
+        f"Respond as the {role_name} role in 2-5 concise sentences.\n"
+        f"Topic: {topic or 'General discussion'}\n"
+        f"Prompt from {sender}: {prompt}\n"
+        f"Stay in role and be specific."
+    )
+
+
+def generate_reply(role: str, prompt: str, provider: str = "deterministic", model: str | None = None) -> str:
+    if provider == "deterministic":
+        return build_role_reply(role, prompt)
+    if provider != "ollama":
+        raise ValueError(f"unsupported provider: {provider}")
+
+    model_name = model or "llama3.2:latest"
+    result = subprocess.run(
+        ["ollama", "run", model_name, prompt],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    return result.stdout.strip()
+
+
 def maybe_build_reply_event(name: str, event: dict[str, Any]) -> dict[str, Any] | None:
+    events = build_reply_events(name=name, event=event)
+    if not events:
+        return None
+    return events[0]
+
+
+def build_reply_events(
+    name: str,
+    event: dict[str, Any],
+    provider: str = "deterministic",
+    model: str | None = None,
+    next_role: str | None = None,
+    generate_reply: Callable[[str, str, str, str | None], str] = generate_reply,
+) -> list[dict[str, Any]] | None:
     if event.get("type") != "room.role_prompt":
         return None
 
     role = event.get("role")
-    prompt = event.get("prompt", "")
     if role != name:
         return None
 
-    return {
-        "type": "message.submit",
-        "content": build_role_reply(role, prompt),
-    }
+    if provider == "ollama":
+        llm_prompt = build_ollama_prompt(role, event)
+        reply_content = generate_reply(role, llm_prompt, provider, model)
+    else:
+        reply_content = generate_reply(role, event.get("prompt", ""), provider, model)
+
+    events: list[dict[str, Any]] = [{"type": "message.submit", "content": reply_content}]
+
+    if next_role:
+        events.append({"type": "message.submit", "content": f"/ask {next_role}"})
+        role_name = ROLE_PREFIXES.get(role, role.title())
+        events.append(
+            {
+                "type": "message.submit",
+                "content": f"{role_name} asks {next_role} to respond to: {reply_content}",
+            }
+        )
+
+    return events
 
 
-async def run(name: str, uri: str, message: str | None) -> None:
+async def run(
+    name: str,
+    uri: str,
+    message: str | None,
+    provider: str = "deterministic",
+    model: str | None = None,
+    next_role: str | None = None,
+    handoff_delay_seconds: float = 2.2,
+) -> None:
     if connect is None:
         raise RuntimeError("websockets is not installed. Install dependencies from requirements.txt first.")
 
@@ -52,10 +119,21 @@ async def run(name: str, uri: str, message: str | None) -> None:
         print(f"[{name}] connected to {uri}. Ctrl+C to exit.")
         while True:
             evt = json.loads(await ws.recv())
-            maybe_reply = maybe_build_reply_event(name, evt)
-            if maybe_reply is not None:
-                await ws.send(json.dumps(maybe_reply))
-                print(f"{name}> {maybe_reply['content']}")
+            reply_events = build_reply_events(
+                name=name,
+                event=evt,
+                provider=provider,
+                model=model,
+                next_role=next_role,
+            )
+            if reply_events is not None:
+                for reply_event in reply_events:
+                    await ws.send(json.dumps(reply_event))
+                    print(f"{name}> {reply_event['content']}")
+                    if reply_event.get("type") == "message.submit" and str(reply_event.get("content", "")).startswith("/ask "):
+                        await asyncio.sleep(handoff_delay_seconds)
+                    else:
+                        await asyncio.sleep(0.05)
                 continue
 
             etype = evt.get("type")
@@ -76,6 +154,20 @@ if __name__ == "__main__":
     parser.add_argument("--name", required=True)
     parser.add_argument("--uri", default="ws://127.0.0.1:8765")
     parser.add_argument("--message", default=None)
+    parser.add_argument("--provider", choices=["deterministic", "ollama"], default="deterministic")
+    parser.add_argument("--model", default=None)
+    parser.add_argument("--next-role", default=None)
+    parser.add_argument("--handoff-delay-seconds", type=float, default=2.2)
     args = parser.parse_args()
 
-    asyncio.run(run(args.name, args.uri, args.message))
+    asyncio.run(
+        run(
+            name=args.name,
+            uri=args.uri,
+            message=args.message,
+            provider=args.provider,
+            model=args.model,
+            next_role=args.next_role,
+            handoff_delay_seconds=args.handoff_delay_seconds,
+        )
+    )

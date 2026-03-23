@@ -159,6 +159,16 @@ class RoomServerTests(unittest.IsolatedAsyncioTestCase):
         role_prompts = [item for item in payloads if item["type"] == "room.role_prompt"]
         self.assertEqual(role_prompts, [])
 
+    async def test_role_does_not_reprompt_itself_on_own_reply(self) -> None:
+        self.server.active_target = "critic"
+        self.server.usernames[self.ws] = "critic"
+
+        await self.server.handle_event(self.ws, {"type": "message.submit", "content": "Critic reply"})
+
+        payloads = [json.loads(message) for message in self.ws.sent]
+        role_prompts = [item for item in payloads if item["type"] == "room.role_prompt"]
+        self.assertEqual(role_prompts, [])
+
 
 if __name__ == "__main__":
     unittest.main()
