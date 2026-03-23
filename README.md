@@ -107,7 +107,8 @@ Current and planned room controls include:
 - `/resume`
 - `/topic <text>`
 - `/ask <agent>`
-- later: `/summary`, `/who`, `/help`
+- `/summary`
+- later: `/who`, `/help`
 
 ---
 

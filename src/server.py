@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import asyncio
 import json
+from collections import deque
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -27,6 +28,7 @@ class RoomServer:
         self.topic = ""
         self.roles = ["strategist", "critic", "researcher", "synthesizer"]
         self.active_target: str | None = None
+        self.recent_messages: deque[dict[str, Any]] = deque(maxlen=20)
 
     def _log(self, event_type: str, payload: dict[str, Any]) -> None:
         row = {
@@ -62,6 +64,17 @@ class RoomServer:
     async def _send(self, ws: WebSocketServerProtocol, msg: dict[str, Any]) -> None:
         await ws.send(json.dumps(msg, ensure_ascii=False))
 
+    def _summary_payload(self) -> dict[str, Any]:
+        return {
+            "type": "room.summary",
+            "paused": self.paused,
+            "topic": self.topic,
+            "active_target": self.active_target,
+            "roles": self.roles,
+            "recent_messages_count": len(self.recent_messages),
+            "recent_messages": list(self.recent_messages),
+        }
+
     def _parse_command(self, content: str) -> tuple[str, str] | None:
         clean = (content or "").strip()
         if not clean.startswith("/"):
@@ -90,6 +103,9 @@ class RoomServer:
                 )
                 return
             self.active_target = argument
+        elif command == "summary":
+            await self._send(ws, self._summary_payload())
+            return
         else:
             await self._send(
                 ws,
@@ -193,6 +209,14 @@ class RoomServer:
                 "reason_codes": decision.reason_codes,
             },
         }
+        self.recent_messages.append(
+            {
+                "sender_id": sender_id,
+                "content": content,
+                "target": self.active_target,
+                "decision": decision.decision,
+            }
+        )
         self._log("message_published", outbound)
         await self._broadcast(outbound)
 

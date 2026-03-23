@@ -28,7 +28,9 @@ Commands are sent through normal `message.submit` content:
   "type": "room.state",
   "users": ["human", "strategist"],
   "paused": false,
-  "topic": "Claw95 POC"
+  "topic": "Claw95 POC",
+  "roles": ["strategist", "critic", "researcher", "synthesizer"],
+  "active_target": "strategist"
 }
 ```
 
@@ -38,6 +40,7 @@ Commands are sent through normal `message.submit` content:
   "type": "message.published",
   "sender": {"id": "strategist"},
   "content": "Here is my take...",
+  "target": "critic",
   "decision": {
     "decision": "ALLOW",
     "reason_codes": ["OK"]
@@ -60,10 +63,31 @@ Commands are sent through normal `message.submit` content:
 ```json
 {
   "type": "room.command.result",
-  "command": "pause",
+  "command": "ask",
   "ok": true,
-  "paused": true,
-  "topic": ""
+  "paused": false,
+  "topic": "Claw95 POC",
+  "active_target": "strategist"
+}
+```
+
+### `room.summary`
+```json
+{
+  "type": "room.summary",
+  "paused": false,
+  "topic": "Claw95 POC",
+  "active_target": "strategist",
+  "roles": ["strategist", "critic", "researcher", "synthesizer"],
+  "recent_messages_count": 2,
+  "recent_messages": [
+    {
+      "sender_id": "human",
+      "content": "first idea",
+      "target": "strategist",
+      "decision": "ALLOW"
+    }
+  ]
 }
 ```
 
@@ -77,15 +101,8 @@ Commands are sent through normal `message.submit` content:
 - `/resume`
 - `/topic <text>`
 - `/ask <agent>`
+- `/summary`
 
 Planned but not yet implemented:
-- `/summary`
-- `/who`
-- `/help`
-`/topic <text>`
-
-Planned but not yet implemented:
-- `/ask <agent>`
-- `/summary`
 - `/who`
 - `/help`

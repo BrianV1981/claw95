@@ -19,6 +19,7 @@ class RoomServerTests(unittest.IsolatedAsyncioTestCase):
         self.temp_dir = tempfile.TemporaryDirectory()
         self.log_path = str(Path(self.temp_dir.name) / "events.jsonl")
         self.server = RoomServer(log_path=self.log_path)
+        self.server.moderator.cooldown_seconds = 0
         self.ws = FakeWebSocket()
         self.server.clients.add(self.ws)
         self.server.usernames[self.ws] = "human"
@@ -84,6 +85,31 @@ class RoomServerTests(unittest.IsolatedAsyncioTestCase):
         payloads = [json.loads(message) for message in self.ws.sent]
         published = next(item for item in payloads if item["type"] == "message.published")
         self.assertEqual(published["target"], "critic")
+
+    async def test_summary_command_returns_room_snapshot(self) -> None:
+        self.server.topic = "Claw95 POC"
+        self.server.active_target = "strategist"
+        await self.server.handle_event(self.ws, {"type": "message.submit", "content": "first idea"})
+        await self.server.handle_event(self.ws, {"type": "message.submit", "content": "second idea"})
+        self.ws.sent.clear()
+
+        await self.server.handle_event(self.ws, {"type": "message.submit", "content": "/summary"})
+
+        payloads = [json.loads(message) for message in self.ws.sent]
+        summary = next(item for item in payloads if item["type"] == "room.summary")
+        self.assertEqual(summary["topic"], "Claw95 POC")
+        self.assertEqual(summary["active_target"], "strategist")
+        self.assertEqual(summary["recent_messages_count"], 2)
+        self.assertEqual(len(summary["recent_messages"]), 2)
+
+    async def test_summary_command_works_while_paused(self) -> None:
+        self.server.paused = True
+
+        await self.server.handle_event(self.ws, {"type": "message.submit", "content": "/summary"})
+
+        payloads = [json.loads(message) for message in self.ws.sent]
+        summary = next(item for item in payloads if item["type"] == "room.summary")
+        self.assertTrue(summary["paused"])
 
 
 if __name__ == "__main__":
