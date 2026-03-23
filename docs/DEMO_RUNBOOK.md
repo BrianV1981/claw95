@@ -48,7 +48,7 @@ python3 src/agent_bridge.py --name critic --uri ws://127.0.0.1:8765
 
 ### Strategist
 ```bash
-python3 src/agent_bridge.py --name strategist --uri ws://127.0.0.1:8765
+python3 -m src.agent_bridge --name strategist --uri ws://127.0.0.1:8765
 ```
 
 Optional additional roles:
@@ -204,5 +204,8 @@ If you want the shortest convincing path:
 6. send a prompt
 7. observe the critic reply
 8. run `python3 src/replay.py logs/events.jsonl --event-type role_prompt`
+
+That is the minimum proof loop.
+`python3 src/replay.py logs/events.jsonl --event-type role_prompt`
 
 That is the minimum proof loop.

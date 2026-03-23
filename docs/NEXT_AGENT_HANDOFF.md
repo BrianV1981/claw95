@@ -29,6 +29,7 @@ Issues currently opened for phase work:
 - `#9` — replay/inspect utility for JSONL logs (implemented)
 - `#10` — trace filtering metadata (`room_id`, `sender_type`, `command_category`) (implemented)
 - `#11` — demo runbook for end-to-end proof flow (implemented)
+- `#12` — runbook validation bug: direct `src/server.py` invocation fails; module-style invocation required (validated and documented)
 
 ## Completed POC Capabilities
 Tested commands currently implemented:
@@ -97,3 +98,4 @@ Claw95 used manual equivalent promotion steps when needed.
 No scratch-note sprawl.
 If behavior or workflow changes, update docs in the same slice.
 Prune stale or conflicting content immediately.
+y.
