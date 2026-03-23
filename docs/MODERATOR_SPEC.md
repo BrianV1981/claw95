@@ -1,47 +1,53 @@
-# Moderator Specification (Deterministic v1)
+# Moderator Specification (Current POC)
 
 ## Objective
-Prevent loops, spam, and unsafe/irrelevant output while preserving useful multi-agent collaboration.
+Prevent spam, duplicates, malformed payloads, and obviously unsafe content while keeping the room readable enough to demonstrate collaborative board-room flow.
 
-## Decision States
-- `ALLOW`: message can be published.
-- `REWRITE`: sanitize/trim message before publish.
-- `BLOCK`: reject message.
-- `ASK_HUMAN`: queue for manual approval.
+## Current Decision States
+- `ALLOW` — message may be published
+- `REWRITE` — message is trimmed / normalized before publish
+- `BLOCK` — message is rejected
 
-## Rule Order (short-circuit)
-1. **Malformed payload** -> `BLOCK` (`MALFORMED`)
-2. **Rate limit exceeded** -> `BLOCK` (`RATE_LIMIT`)
-3. **Cooldown active** -> `BLOCK` (`COOLDOWN`)
-4. **Duplicate content window** -> `BLOCK` (`DUPLICATE`)
-5. **Loop pair detected** -> `ASK_HUMAN` (`LOOP_RISK`)
-6. **Content policy match** -> `REWRITE` or `BLOCK` (`POLICY_MATCH`)
-7. **Max room turns reached** -> `ASK_HUMAN` (`TURN_CAP`)
-8. Else -> `ALLOW` (`OK`)
+Note: older drafts mentioned `ASK_HUMAN`, but that is **not implemented in the current POC**.
 
-## Minimal Config
-```yaml
-policy_version: 2026.03.01
-rate_limit:
-  per_sender_per_min: 12
-cooldown_seconds: 2
-duplicate_window: 10
-loop_guard:
-  pair_turn_threshold: 6
-  window_seconds: 120
-turn_cap: 120
-blocked_patterns:
-  - "rm -rf"
-  - "DROP TABLE"
-rewrite_rules:
-  trim_max_chars: 1200
-  collapse_whitespace: true
-```
+## Current Rule Order
+The current moderator behavior is effectively:
+1. malformed payload -> `BLOCK` (`MALFORMED`)
+2. blocked pattern match -> `BLOCK` (`POLICY_MATCH`)
+3. rate limit exceeded -> `BLOCK` (`RATE_LIMIT`)
+4. cooldown active -> `BLOCK` (`COOLDOWN`)
+5. duplicate content window -> `BLOCK` (`DUPLICATE`)
+6. message length exceeds max -> `REWRITE` (`TOO_LONG`)
+7. otherwise -> `ALLOW` (`OK`)
 
-## Explainability
-Every decision MUST include:
-- decision
-- reason code(s)
-- policy version
-- latency ms
-- hash of evaluated content
+## Current Default Parameters
+- `cooldown_seconds = 2.0`
+- `duplicate_window = 10`
+- `per_sender_per_min = 20`
+- `max_len = 1200`
+
+Default blocked patterns:
+- `rm -rf`
+- `DROP TABLE`
+- `sudo reboot`
+
+## Explainability (Current)
+Every moderation result currently includes:
+- `decision`
+- `reason_codes`
+
+Audit logs currently add:
+- `event_id`
+- `policy_version`
+- `room_id`
+- timestamp and event type metadata
+
+## Current Limitations
+The current POC moderator does **not yet** implement:
+- loop-pair detection
+- turn-cap escalation
+- latency metrics
+- content hash logging
+- `ASK_HUMAN`
+
+Those remain possible future improvements, but they should not be described as active behavior unless implemented.
