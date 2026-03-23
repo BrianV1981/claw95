@@ -91,6 +91,34 @@ Commands are sent through normal `message.submit` content:
 }
 ```
 
+### `room.who`
+```json
+{
+  "type": "room.who",
+  "users": ["human"],
+  "roles": ["strategist", "critic", "researcher", "synthesizer"],
+  "active_target": "strategist",
+  "paused": false,
+  "topic": "Claw95 POC"
+}
+```
+
+### `room.help`
+```json
+{
+  "type": "room.help",
+  "commands": [
+    "/pause",
+    "/resume",
+    "/topic <text>",
+    "/ask <agent>",
+    "/summary",
+    "/who",
+    "/help"
+  ]
+}
+```
+
 ### `error`
 ```json
 {"type":"error","code":"UNKNOWN_COMMAND","message":"unknown command: /whatever"}
@@ -102,7 +130,5 @@ Commands are sent through normal `message.submit` content:
 - `/topic <text>`
 - `/ask <agent>`
 - `/summary`
-
-Planned but not yet implemented:
 - `/who`
 - `/help`

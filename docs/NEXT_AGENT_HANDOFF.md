@@ -1,7 +1,7 @@
 # Claw95 — Next Agent Handoff
 
 ## Project Status
-Claw95 is in early POC implementation and now follows the **updated GitOps Bridge doctrine**:
+Claw95 is in early POC implementation and follows the updated GitOps Bridge doctrine:
 - one long-lived phase branch per milestone
 - atomic semantic pushes for every isolated slice
 - immediate documentation updates
@@ -16,13 +16,11 @@ Claw95 is in early POC implementation and now follows the **updated GitOps Bridg
 6. code in `src/`
 
 ## Branch / Git State
-Short-lived issue branches were used earlier while the GitOps Bridge doctrine was still being interpreted.
-That has now been superseded.
+Active phase branch: `dev-phase-1`
 
-Current intent after cleanup:
-- merge completed short-lived branches into `main`
-- delete stale issue branches
-- continue future work on a proper phase branch instead of per-issue micro-branches
+Issues currently opened for phase work:
+- `#5` — `/who` and `/help` room usability commands
+- `#4` — MIT license + OSS intake policy
 
 ## Completed POC Capabilities
 Tested commands currently implemented:
@@ -31,6 +29,8 @@ Tested commands currently implemented:
 - `/topic <text>`
 - `/ask <agent>`
 - `/summary`
+- `/who`
+- `/help`
 
 Room state currently includes:
 - `paused`
@@ -46,7 +46,7 @@ Run:
 python3 -m unittest discover -s tests -v
 ```
 
-Status at last known green run: **16 tests passing**
+Status at last known green run: **18 tests passing**
 
 Coverage includes:
 - moderator decisions (malformed/policy/cooldown/rate/duplicate/rewrite)
@@ -54,20 +54,18 @@ Coverage includes:
 - ask-target selection + unknown agent rejection
 - target propagation on published messages
 - summary snapshot behavior including paused-room summary
+- participant listing and help command behavior
 
 ## Current Missing Pieces vs POC
-- `/who` and `/help` commands
 - role-aware dispatch behavior beyond message target tagging
 - richer auditability fields (`event_id`, policy version, clearer metadata)
+- MIT license + OSS intake policy still pending
 - alignment pass for older architecture/spec docs
-- MIT license + OSS intake policy still recommended
 
 ## Recommended Next Slice
-On the next proper phase branch:
-1. add `/who` and `/help` with tests
+1. add MIT license and third-party intake policy
 2. begin minimal role dispatch behavior tied to `active_target`
 3. improve log schema for audit/replay readiness
-4. add MIT license and third-party intake policy before deeper repo extraction work
 
 ## Documentation Rule
 No scratch-note sprawl.

@@ -75,6 +75,30 @@ class RoomServer:
             "recent_messages": list(self.recent_messages),
         }
 
+    def _who_payload(self) -> dict[str, Any]:
+        return {
+            "type": "room.who",
+            "users": list(self.usernames.values()),
+            "roles": self.roles,
+            "active_target": self.active_target,
+            "paused": self.paused,
+            "topic": self.topic,
+        }
+
+    def _help_payload(self) -> dict[str, Any]:
+        return {
+            "type": "room.help",
+            "commands": [
+                "/pause",
+                "/resume",
+                "/topic <text>",
+                "/ask <agent>",
+                "/summary",
+                "/who",
+                "/help",
+            ],
+        }
+
     def _parse_command(self, content: str) -> tuple[str, str] | None:
         clean = (content or "").strip()
         if not clean.startswith("/"):
@@ -105,6 +129,12 @@ class RoomServer:
             self.active_target = argument
         elif command == "summary":
             await self._send(ws, self._summary_payload())
+            return
+        elif command == "who":
+            await self._send(ws, self._who_payload())
+            return
+        elif command == "help":
+            await self._send(ws, self._help_payload())
             return
         else:
             await self._send(

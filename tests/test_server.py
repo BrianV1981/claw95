@@ -111,6 +111,25 @@ class RoomServerTests(unittest.IsolatedAsyncioTestCase):
         summary = next(item for item in payloads if item["type"] == "room.summary")
         self.assertTrue(summary["paused"])
 
+    async def test_who_command_returns_room_participants(self) -> None:
+        self.server.usernames[self.ws] = "human"
+
+        await self.server.handle_event(self.ws, {"type": "message.submit", "content": "/who"})
+
+        payloads = [json.loads(message) for message in self.ws.sent]
+        who = next(item for item in payloads if item["type"] == "room.who")
+        self.assertIn("human", who["users"])
+        self.assertEqual(who["roles"], ["strategist", "critic", "researcher", "synthesizer"])
+
+    async def test_help_command_returns_supported_commands(self) -> None:
+        await self.server.handle_event(self.ws, {"type": "message.submit", "content": "/help"})
+
+        payloads = [json.loads(message) for message in self.ws.sent]
+        help_payload = next(item for item in payloads if item["type"] == "room.help")
+        self.assertIn("/pause", help_payload["commands"])
+        self.assertIn("/help", help_payload["commands"])
+        self.assertIn("/who", help_payload["commands"])
+
 
 if __name__ == "__main__":
     unittest.main()
