@@ -1,9 +1,11 @@
 # Claw95 — Next Agent Handoff
 
 ## Project Status
-Claw95 is in early POC implementation and follows the updated GitOps Bridge doctrine:
+Claw95 has completed Phase 1 and is now on `dev-phase-2` for live AI-agent integration.
+
+Working doctrine remains:
 - one long-lived phase branch per milestone
-- atomic semantic pushes for every isolated slice
+- atomic semantic pushes for each isolated slice
 - immediate documentation updates
 - no note sprawl
 
@@ -18,21 +20,14 @@ Claw95 is in early POC implementation and follows the updated GitOps Bridge doct
 8. code in `src/`
 
 ## Branch / Git State
-Active phase branch: `dev-phase-1`
+Active phase branch: `dev-phase-2`
 
-Issues currently opened for phase work:
-- `#5` — `/who` and `/help` room usability commands (implemented)
-- `#4` — MIT license + OSS intake policy (implemented)
-- `#6` — audit log event metadata hardening (implemented)
-- `#7` — role-aware dispatch prompt event for targeted messages (implemented)
-- `#8` — agent bridge reaction to role prompts (implemented)
-- `#9` — replay/inspect utility for JSONL logs (implemented)
-- `#10` — trace filtering metadata (`room_id`, `sender_type`, `command_category`) (implemented)
-- `#11` — demo runbook for end-to-end proof flow (implemented)
-- `#12` — runbook validation bug: direct `src/server.py` invocation fails; module-style invocation required (validated and documented)
+Relevant issues:
+- `#13` — add real Ollama-backed agent participation and prove two-agent room communication (in progress; live proof already achieved)
 
-## Completed POC Capabilities
-Tested commands currently implemented:
+## Proven Capabilities
+### Core room behavior
+Implemented and tested commands:
 - `/pause`
 - `/resume`
 - `/topic <text>`
@@ -41,7 +36,7 @@ Tested commands currently implemented:
 - `/who`
 - `/help`
 
-Room state currently includes:
+Room state includes:
 - `paused`
 - `topic`
 - `users`
@@ -49,12 +44,38 @@ Room state currently includes:
 - `active_target`
 - recent in-memory message history used by summaries
 
-Targeted-message behavior now includes:
+### Targeted role behavior
+Targeted-message flow now includes:
 - `message.published` with `target`
 - `room.role_prompt` emission when a message is sent with an active target role
-- basic agent-bridge reply generation when an agent receives a matching role prompt
+- self-loop prevention so a role does not re-prompt itself on its own reply
+- agent-bridge reply generation for matching role prompts
+- optional handoff from one role to a second role via `/ask <role>` + follow-up message
 
-Audit logging now includes:
+### Agent provider behavior
+`src/agent_bridge.py` now supports:
+- `deterministic` provider mode
+- `ollama` provider mode
+- configurable `--model`
+- optional `--next-role`
+- `--handoff-delay-seconds` to avoid cooldown collisions on immediate handoff
+
+### Live validation already achieved
+Validated live with local Ollama:
+- `strategist` on `ollama` (`llama3.2:latest`)
+- `critic` on `ollama` (`llama3.2:latest`)
+- human prompt targeted to `strategist`
+- strategist generated a real local-model reply
+- strategist handed off to critic
+- critic generated a real local-model reply
+
+This means Claw95 has now proven:
+- human → AI role prompt
+- AI role → second AI role handoff
+- local LLM-backed in-room communication
+
+## Audit / Replay Status
+Audit logging includes:
 - `event_id` (UUID)
 - `policy_version` (`poc-v1`)
 - `room_id` (`main`)
@@ -67,38 +88,30 @@ Audit logging now includes:
 Replay utility:
 - `src/replay.py` supports loading/filtering JSONL events and printing readable summaries
 
-Demo runbook:
-- `docs/DEMO_RUNBOOK.md` walks through server start, role bridge start, targeting, role prompt emission, agent reply, and log replay
-
 ## Test Status
 Run:
 ```bash
 python3 -m unittest discover -s tests -v
 ```
 
-Status at last known green run: **28 tests passing**
+Status at last green run: **32 tests passing**
 
-## Known External Bug (Reported During Workflow)
-`gitops promote` currently fails in upstream tool due to command runner argument conflict:
-- error: `stdout and stderr arguments may not be used with capture_output`
-
-Claw95 used manual equivalent promotion steps when needed.
-
-## Current Missing Pieces vs POC
-- richer agent behavior beyond deterministic templated replies
-- optional real browser/UI or terminal UX polish for demo friendliness
-- CI / lint / packaging hardening
+## Known Runtime Notes
+- module-style invocation remains required:
+  - `python3 -m src.server`
+  - `python3 -m src.agent_bridge`
+  - `python3 -m src.replay`
+- current runtime still emits `websockets.* is deprecated` warnings; functional, but worth cleaning up in a future slice
+- immediate handoff without delay can collide with moderation cooldown; use `--handoff-delay-seconds` when chaining roles
 
 ## Recommended Next Slice
-1. do final doc-alignment sweep across legacy architecture/spec docs
-2. optionally add richer role-specific response templates or pluggable role behavior
-3. optionally validate the demo runbook live against the current runtime environment
+1. commit the Ollama integration + self-loop guard + docs update
+2. decide whether role handoff should stay command-driven or become a first-class server event
+3. optionally add role-specific prompt templates / context windows per role
+4. optionally add a third Ollama-backed role (`researcher` or `synthesizer`)
+5. optionally remove websocket deprecation warnings by updating imports/API usage
 
 ## Documentation Rule
 No scratch-note sprawl.
 If behavior or workflow changes, update docs in the same slice.
 Prune stale or conflicting content immediately.
-y.
-e slice.
-Prune stale or conflicting content immediately.
-y.

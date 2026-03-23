@@ -99,18 +99,20 @@ The proof-of-concept currently centers on:
 - a room server
 - a deterministic moderator
 - role-aware command/state handling
-- targeted role-prompt events and basic agent-side reactions
+- targeted role-prompt events and agent-side reactions
+- pluggable agent providers, including local Ollama-backed role participants
 - audit-friendly logs
 - a simple replay/inspect utility for event logs
 - a minimal command layer for controlling the room
 
-Current and planned room controls include:
+Current room controls include:
 - `/pause`
 - `/resume`
 - `/topic <text>`
 - `/ask <agent>`
 - `/summary`
-- later: `/who`, `/help`
+- `/who`
+- `/help`
 
 ---
 
@@ -168,10 +170,13 @@ Current naming strategy:
 ---
 
 ## Current Status
-Claw95 is still early, but the repo is now being structured around:
+Claw95 is still early, but the repo now has a proven local-first room loop with:
 - a clear product vision
 - a POC-first scope
 - deterministic moderation
+- live targeted role prompting
+- local Ollama-backed agent participation
+- verified two-agent handoff in-room
 - disciplined workflow
 - explicit handoff continuity
 

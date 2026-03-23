@@ -28,7 +28,7 @@ Optional but recommended:
 ## Step 1 — Start the room server
 From the repo root:
 ```bash
-python3 src/server.py --host 127.0.0.1 --port 8765 --log logs/events.jsonl
+python3 -m src.server --host 127.0.0.1 --port 8765 --log logs/events.jsonl
 ```
 
 Expected output:
@@ -43,7 +43,7 @@ Open a new terminal for each role you want to demonstrate.
 
 ### Critic
 ```bash
-python3 src/agent_bridge.py --name critic --uri ws://127.0.0.1:8765
+python3 -m src.agent_bridge --name critic --uri ws://127.0.0.1:8765
 ```
 
 ### Strategist
@@ -53,8 +53,8 @@ python3 -m src.agent_bridge --name strategist --uri ws://127.0.0.1:8765
 
 Optional additional roles:
 ```bash
-python3 src/agent_bridge.py --name researcher --uri ws://127.0.0.1:8765
-python3 src/agent_bridge.py --name synthesizer --uri ws://127.0.0.1:8765
+python3 -m src.agent_bridge --name researcher --uri ws://127.0.0.1:8765
+python3 -m src.agent_bridge --name synthesizer --uri ws://127.0.0.1:8765
 ```
 
 ---
@@ -62,7 +62,7 @@ python3 src/agent_bridge.py --name synthesizer --uri ws://127.0.0.1:8765
 ## Step 3 — Start a human participant session
 Open another terminal and connect as a human-style bridge for manual testing:
 ```bash
-python3 src/agent_bridge.py --name human --uri ws://127.0.0.1:8765
+python3 -m src.agent_bridge --name human --uri ws://127.0.0.1:8765
 ```
 
 Note: the current bridge is a simple websocket participant, so using it as a human terminal is acceptable for the POC.
@@ -138,14 +138,14 @@ You can now test:
 ## Step 8 — Inspect the log output
 Replay the JSONL log with the built-in utility:
 ```bash
-python3 src/replay.py logs/events.jsonl
+python3 -m src.replay logs/events.jsonl
 ```
 
 Filter to one event type if needed:
 ```bash
-python3 src/replay.py logs/events.jsonl --event-type room_command
-python3 src/replay.py logs/events.jsonl --event-type role_prompt
-python3 src/replay.py logs/events.jsonl --event-type message_published
+python3 -m src.replay logs/events.jsonl --event-type room_command
+python3 -m src.replay logs/events.jsonl --event-type role_prompt
+python3 -m src.replay logs/events.jsonl --event-type message_published
 ```
 
 This is useful for demonstrating:
@@ -171,13 +171,13 @@ A successful run demonstrates that Claw95 already has:
 ## Current POC Limitations
 This demo does **not** yet prove:
 - advanced autonomous deliberation
-- nuanced role-specific reasoning
+- strong long-context memory between turns
 - production-grade UX
 - rich replay UI
-- sophisticated agent orchestration
+- sophisticated multi-turn orchestration controls
 
-The current role replies are intentionally simple and deterministic.
-That is acceptable for this stage because the goal is proving the board-room loop, not full intelligence.
+The room now supports both deterministic bridge replies and local Ollama-backed role participants.
+That is acceptable for this stage because the goal is proving the board-room loop and live role handoff, not final intelligence quality.
 
 ---
 
@@ -194,18 +194,51 @@ That gives you:
 
 ---
 
-## Fastest Demo Script Order
-If you want the shortest convincing path:
-1. start server
-2. start `critic`
-3. start `human`
-4. `/topic Claw95 board room demo`
-5. `/ask critic`
-6. send a prompt
-7. observe the critic reply
-8. run `python3 src/replay.py logs/events.jsonl --event-type role_prompt`
+## Ollama Two-Agent Demo
+To prove live AI-to-AI handoff locally with Ollama:
 
-That is the minimum proof loop.
-`python3 src/replay.py logs/events.jsonl --event-type role_prompt`
+### Terminal 1 — server
+```bash
+python3 -m src.server --host 127.0.0.1 --port 8772 --log /tmp/claw95-ollama-events.jsonl
+```
 
-That is the minimum proof loop.
+### Terminal 2 — strategist on Ollama, with handoff to critic
+```bash
+python3 -m src.agent_bridge \
+  --name strategist \
+  --uri ws://127.0.0.1:8772 \
+  --provider ollama \
+  --model llama3.2:latest \
+  --next-role critic \
+  --handoff-delay-seconds 3.0
+```
+
+### Terminal 3 — critic on Ollama
+```bash
+python3 -m src.agent_bridge \
+  --name critic \
+  --uri ws://127.0.0.1:8772 \
+  --provider ollama \
+  --model llama3.2:latest
+```
+
+### Terminal 4 — human websocket client or small helper script
+Use a websocket client to send:
+```json
+{"type":"message.submit","content":"/topic both ollama agents"}
+{"type":"message.submit","content":"/ask strategist"}
+{"type":"message.submit","content":"Propose a launch plan for Claw95, then ask critic to review the biggest operational risks."}
+```
+
+Expected proof loop:
+1. human prompt is published to `strategist`
+2. `strategist` generates a local Ollama reply
+3. `strategist` switches target to `critic`
+4. handoff message is published to `critic`
+5. `critic` generates a local Ollama reply
+
+Inspect the resulting log with:
+```bash
+python3 -m src.replay /tmp/claw95-ollama-events.jsonl --event-type message_published
+python3 -m src.replay /tmp/claw95-ollama-events.jsonl --event-type role_prompt
+```
