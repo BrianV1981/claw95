@@ -13,7 +13,8 @@ Claw95 is in early POC implementation and follows the updated GitOps Bridge doct
 3. `docs/WORKFLOW.md` — active development protocol
 4. `docs/NEXT_AGENT_HANDOFF.md` — live continuation handoff
 5. `docs/API.md` — current POC wire contract
-6. code in `src/`
+6. `docs/OSS_INTAKE.md` — OSS licensing/extraction policy
+7. code in `src/`
 
 ## Branch / Git State
 Active phase branch: `dev-phase-1`
@@ -59,11 +60,11 @@ Coverage includes:
 ## Current Missing Pieces vs POC
 - role-aware dispatch behavior beyond message target tagging
 - richer auditability fields (`event_id`, policy version, clearer metadata)
-- MIT license + OSS intake policy still pending
 - alignment pass for older architecture/spec docs
+- repo extraction matrix still recommended if we start mining external repos systematically
 
 ## Recommended Next Slice
-1. add MIT license and third-party intake policy
+1. push the MIT license + OSS intake policy slice
 2. begin minimal role dispatch behavior tied to `active_target`
 3. improve log schema for audit/replay readiness
 

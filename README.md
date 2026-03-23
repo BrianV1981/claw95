@@ -129,7 +129,7 @@ Important docs:
 Claw95 is currently being developed with:
 - **TDD-first** changes
 - **GitOps-Bridge-native** workflow
-- **atomic issue-driven slices**
+- **phase-based branching with atomic semantic pushes**
 - **constant documentation updates**
 - **active pruning of stale notes/docs**
 
