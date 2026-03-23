@@ -1,48 +1,188 @@
-# Clawset (working title)
+# Claw95
 
-A local-first **real-time AI board room** for Linux/Ubuntu/WSL where multiple specialized agents collaborate in one visible room while a human can interject at any time.
+**Claw95 is a real-time AI board room.**
 
-Claw95 uses a deterministic Python moderator to keep the room readable, auditable, and resistant to spam or loop behavior.
+It is a local-first, multi-agent discussion space where specialized AI participants can collaborate in one visible room, a human can jump into the conversation at any time, and a deterministic non-AI moderator keeps the discussion readable, controlled, and auditable.
 
-## Current Direction
-The project is currently being built as a **proof of concept first**.
+This repository is the home of the **Claw95 proof of concept**.
 
-Primary source-of-truth docs:
-- `docs/POC_MVP_PRD.md`
-- `docs/WORKFLOW.md`
-- `docs/NEXT_AGENT_HANDOFF.md`
+---
 
-## Goals
-- 90s-style chatroom vibe
-- Multiple specialized AI agents in one room
-- Real-time visible collaboration
-- Human participation in the same room
-- Simple local-first architecture
-- Strong guardrails via deterministic Python moderation
+## Vision
+Most AI agent systems are built around hidden orchestration:
+- background task routing
+- invisible handoffs
+- workflow automation
+- post-hoc logs instead of live participation
 
-## Initial structure
-- `src/` — app code (server, moderator, clients)
-- `config/` — room and policy config (YAML/JSON)
-- `logs/` — transcripts and moderation events
-- `tests/` — unit/integration tests
-- `docs/` — design notes and protocol docs
+Claw95 aims at something different.
 
-## Proposed first files
-- `src/server.py`
-- `src/moderator.py`
-- `src/agent_bridge.py`
-- `src/tui.py`
-- `config/policy.yaml`
+Claw95 is built around the idea of a **shared board room**:
+- multiple specialized AI agents in one room
+- real-time visible communication
+- human participation in the same conversation
+- deterministic moderation instead of “just let another LLM police it”
 
-## Name ideas (shortlist)
-- **Clawset** — funny, memorable, community-friendly
-- **Claw95** — brand-aligned + instant retro signal
-- **SudoSay** — command-line charm, very dev-native
-- **BotNETscape** — nostalgic and clever, but less broad appeal
+The goal is not just to make agents talk.
+The goal is to make their collaboration **visible, useful, and steerable in real time**.
 
-## Name strategy recommendation
-- Product: **Claw95**
-- Room mode: **The Clawset**
-- CLI command: **sudosay**
+---
 
-This gives you a layered brand that is playful and practical.
+## What Claw95 Is
+Claw95 is intended to be:
+- a **real-time AI board room**
+- a **visible multi-agent deliberation space**
+- a **human-in-the-loop collaboration room**
+- a **deterministically moderated chat system**
+- a **local-first proof of concept** before anything larger
+
+This means the product is optimized for:
+- critique
+- refinement
+- review
+- alternatives
+- synthesis
+- idea development
+
+It is **not** being built as a generic agent automation platform first.
+
+---
+
+## Core Product Pillars
+### 1. Real-time visibility
+You should be able to watch the discussion happen live.
+
+### 2. Specialized participants
+Agents should have distinct roles, not generic interchangeable personalities.
+
+### 3. Human participation
+The human is not outside the loop. The human is in the room.
+
+### 4. Deterministic moderation
+Room order should be controlled by explicit, testable rules.
+
+### 5. Auditability
+If the moderator blocks, rewrites, or allows something, the reason should be inspectable.
+
+---
+
+## Why This Repo Exists
+This repository exists to prove a specific claim:
+
+> A human can get better idea critique and refinement from a visible multi-agent board room with deterministic moderation than from a standard one-agent chat interface.
+
+That is the current proof-of-concept target.
+
+---
+
+## Current Project Stage
+Claw95 is currently being built as a **POC / MVP first**.
+
+The focus right now is not on:
+- heavy UI polish
+- cloud deployment
+- plugins
+- broad integrations
+- enterprise workflow features
+
+The focus is on proving the core room model:
+- one shared room
+- multiple roles
+- human interjection
+- deterministic moderation
+- visible live message flow
+
+---
+
+## Current POC Direction
+The proof-of-concept currently centers on:
+- a room server
+- a deterministic moderator
+- role-aware command/state handling
+- audit-friendly logs
+- a minimal command layer for controlling the room
+
+Current and planned room controls include:
+- `/pause`
+- `/resume`
+- `/topic <text>`
+- `/ask <agent>`
+- later: `/summary`, `/who`, `/help`
+
+---
+
+## Repo Map
+- `src/` — implementation code
+- `tests/` — automated tests
+- `docs/` — product, protocol, API, and handoff docs
+
+Important docs:
+- `docs/POC_MVP_PRD.md` — the active proof-of-concept product definition
+- `docs/WORKFLOW.md` — active development workflow and GitOps Bridge-native protocol
+- `docs/API.md` — current wire/API behavior
+- `docs/NEXT_AGENT_HANDOFF.md` — live continuation state for the next agent/contributor
+
+---
+
+## Development Philosophy
+Claw95 is currently being developed with:
+- **TDD-first** changes
+- **GitOps-Bridge-native** workflow
+- **atomic issue-driven slices**
+- **constant documentation updates**
+- **active pruning of stale notes/docs**
+
+The repo should remain understandable to the next human or agent picking it up.
+
+---
+
+## Workflow Summary
+At a high level, development follows this pattern:
+1. open or identify the issue
+2. isolate work on a dedicated branch
+3. write tests first
+4. implement the smallest working slice
+5. update docs immediately
+6. push with semantic intent
+
+When available, this is executed through the GitOps Bridge workflow:
+- `gitops bug`
+- `gitops fix`
+- `gitops push`
+- `gitops promote`
+
+---
+
+## Naming
+Current naming strategy:
+- **Product:** Claw95
+- **Room/community mode:** The Clawset
+- **CLI concept:** `sudosay`
+
+---
+
+## Current Status
+Claw95 is still early, but the repo is now being structured around:
+- a clear product vision
+- a POC-first scope
+- deterministic moderation
+- disciplined workflow
+- explicit handoff continuity
+
+This is not a finished product yet.
+It is a focused build toward a compelling first proof.
+
+---
+
+## If You’re New Here
+Start here:
+1. read this README
+2. read `docs/POC_MVP_PRD.md`
+3. read `docs/WORKFLOW.md`
+4. read `docs/NEXT_AGENT_HANDOFF.md`
+
+That should tell you:
+- what Claw95 is
+- why it exists
+- how work is supposed to happen
+- where the project currently stands
