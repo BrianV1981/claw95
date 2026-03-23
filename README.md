@@ -181,10 +181,12 @@ Start here:
 1. read this README
 2. read `docs/POC_MVP_PRD.md`
 3. read `docs/WORKFLOW.md`
-4. read `docs/NEXT_AGENT_HANDOFF.md`
+4. read `docs/DEMO_RUNBOOK.md`
+5. read `docs/NEXT_AGENT_HANDOFF.md`
 
 That should tell you:
 - what Claw95 is
 - why it exists
 - how work is supposed to happen
+- how to demo the current proof of concept
 - where the project currently stands

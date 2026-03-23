@@ -1,0 +1,208 @@
+# Claw95 Demo Runbook
+
+## Purpose
+This runbook demonstrates the current Claw95 proof-of-concept flow end to end:
+
+1. start the room server
+2. connect role-based agent bridges
+3. connect a human participant
+4. target a role
+5. trigger a `room.role_prompt`
+6. observe the agent bridge reply in the shared room
+7. inspect the resulting audit log
+
+This is the fastest way to prove that the current POC behaves like a live AI board room rather than just a static chat server.
+
+---
+
+## Prerequisites
+- Python 3.11+
+- project dependencies installed
+- terminal access to run multiple processes
+
+Optional but recommended:
+- one terminal per participant / role bridge
+
+---
+
+## Step 1 — Start the room server
+From the repo root:
+```bash
+python3 src/server.py --host 127.0.0.1 --port 8765 --log logs/events.jsonl
+```
+
+Expected output:
+```text
+Clawset room online at ws://127.0.0.1:8765
+```
+
+---
+
+## Step 2 — Start one or more role bridges
+Open a new terminal for each role you want to demonstrate.
+
+### Critic
+```bash
+python3 src/agent_bridge.py --name critic --uri ws://127.0.0.1:8765
+```
+
+### Strategist
+```bash
+python3 src/agent_bridge.py --name strategist --uri ws://127.0.0.1:8765
+```
+
+Optional additional roles:
+```bash
+python3 src/agent_bridge.py --name researcher --uri ws://127.0.0.1:8765
+python3 src/agent_bridge.py --name synthesizer --uri ws://127.0.0.1:8765
+```
+
+---
+
+## Step 3 — Start a human participant session
+Open another terminal and connect as a human-style bridge for manual testing:
+```bash
+python3 src/agent_bridge.py --name human --uri ws://127.0.0.1:8765
+```
+
+Note: the current bridge is a simple websocket participant, so using it as a human terminal is acceptable for the POC.
+
+---
+
+## Step 4 — Set room topic
+From the human session, submit:
+```json
+{"type":"message.submit","content":"/topic Claw95 board room demo"}
+```
+
+If you are using the current bridge directly, you may instead start the session with an initial message or use a websocket client that can send raw events.
+
+Expected effect:
+- room state reflects the topic
+- audit log records the room command
+
+---
+
+## Step 5 — Target a role
+Send:
+```json
+{"type":"message.submit","content":"/ask critic"}
+```
+
+Expected effect:
+- room state shows `active_target = critic`
+- future room messages will carry `target = critic`
+- role-aware flow is now armed
+
+---
+
+## Step 6 — Send a targeted prompt
+Send:
+```json
+{"type":"message.submit","content":"Review this launch idea and tell me the biggest weakness."}
+```
+
+Expected sequence:
+1. room emits `message.published`
+2. room emits `room.role_prompt` for `critic`
+3. the `critic` bridge receives the prompt and submits a deterministic reply
+4. room publishes the critic reply back into the shared room
+
+Expected example reply:
+```text
+Critic: responding to targeted prompt -> Review this launch idea and tell me the biggest weakness.
+```
+
+---
+
+## Step 7 — Use room inspection commands
+You can now test:
+
+### Show room summary
+```json
+{"type":"message.submit","content":"/summary"}
+```
+
+### Show participants and roles
+```json
+{"type":"message.submit","content":"/who"}
+```
+
+### Show supported commands
+```json
+{"type":"message.submit","content":"/help"}
+```
+
+---
+
+## Step 8 — Inspect the log output
+Replay the JSONL log with the built-in utility:
+```bash
+python3 src/replay.py logs/events.jsonl
+```
+
+Filter to one event type if needed:
+```bash
+python3 src/replay.py logs/events.jsonl --event-type room_command
+python3 src/replay.py logs/events.jsonl --event-type role_prompt
+python3 src/replay.py logs/events.jsonl --event-type message_published
+```
+
+This is useful for demonstrating:
+- room command activity
+- moderation and publication flow
+- role prompt generation
+- traceable event metadata
+
+---
+
+## What This Demo Proves
+A successful run demonstrates that Claw95 already has:
+- a shared room
+- visible multi-party communication
+- human steering through commands
+- deterministic moderation path
+- targeted role prompt generation
+- basic agent-side reaction behavior
+- inspectable event logs
+
+---
+
+## Current POC Limitations
+This demo does **not** yet prove:
+- advanced autonomous deliberation
+- nuanced role-specific reasoning
+- production-grade UX
+- rich replay UI
+- sophisticated agent orchestration
+
+The current role replies are intentionally simple and deterministic.
+That is acceptable for this stage because the goal is proving the board-room loop, not full intelligence.
+
+---
+
+## Recommended Demo Roles
+For the clearest demo, use:
+- `human`
+- `critic`
+- `strategist`
+
+That gives you:
+- one human operator
+- one analytical skeptic
+- one high-level planner
+
+---
+
+## Fastest Demo Script Order
+If you want the shortest convincing path:
+1. start server
+2. start `critic`
+3. start `human`
+4. `/topic Claw95 board room demo`
+5. `/ask critic`
+6. send a prompt
+7. observe the critic reply
+8. run `python3 src/replay.py logs/events.jsonl --event-type role_prompt`
+
+That is the minimum proof loop.

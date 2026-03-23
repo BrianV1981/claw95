@@ -11,10 +11,11 @@ Claw95 is in early POC implementation and follows the updated GitOps Bridge doct
 1. `README.md` — repo homepage / product framing
 2. `docs/POC_MVP_PRD.md` — active proof-of-concept target
 3. `docs/WORKFLOW.md` — active development protocol
-4. `docs/NEXT_AGENT_HANDOFF.md` — live continuation handoff
-5. `docs/API.md` — current POC wire contract
-6. `docs/OSS_INTAKE.md` — OSS licensing/extraction policy
-7. code in `src/`
+4. `docs/API.md` — current POC wire contract
+5. `docs/DEMO_RUNBOOK.md` — end-to-end proof/demo runbook
+6. `docs/NEXT_AGENT_HANDOFF.md` — live continuation handoff
+7. `docs/OSS_INTAKE.md` — OSS licensing/extraction policy
+8. code in `src/`
 
 ## Branch / Git State
 Active phase branch: `dev-phase-1`
@@ -27,6 +28,7 @@ Issues currently opened for phase work:
 - `#8` — agent bridge reaction to role prompts (implemented)
 - `#9` — replay/inspect utility for JSONL logs (implemented)
 - `#10` — trace filtering metadata (`room_id`, `sender_type`, `command_category`) (implemented)
+- `#11` — demo runbook for end-to-end proof flow (implemented)
 
 ## Completed POC Capabilities
 Tested commands currently implemented:
@@ -64,6 +66,9 @@ Audit logging now includes:
 Replay utility:
 - `src/replay.py` supports loading/filtering JSONL events and printing readable summaries
 
+Demo runbook:
+- `docs/DEMO_RUNBOOK.md` walks through server start, role bridge start, targeting, role prompt emission, agent reply, and log replay
+
 ## Test Status
 Run:
 ```bash
@@ -80,13 +85,13 @@ Claw95 used manual equivalent promotion steps when needed.
 
 ## Current Missing Pieces vs POC
 - richer agent behavior beyond deterministic templated replies
-- optional end-to-end demo/runbook for proving the board-room flow live
 - alignment pass for older architecture/spec docs
+- optional real browser/UI or terminal UX polish for demo friendliness
 
 ## Recommended Next Slice
-1. add a demo runbook showing human -> target -> role prompt -> agent reply flow
+1. do final doc-alignment sweep across legacy architecture/spec docs
 2. optionally add richer role-specific response templates or pluggable role behavior
-3. do final doc-alignment sweep across legacy architecture/spec docs
+3. optionally validate the demo runbook live against the current runtime environment
 
 ## Documentation Rule
 No scratch-note sprawl.
