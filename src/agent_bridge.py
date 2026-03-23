@@ -86,12 +86,12 @@ def build_reply_events(
     events: list[dict[str, Any]] = [{"type": "message.submit", "content": reply_content}]
 
     if next_role:
-        events.append({"type": "message.submit", "content": f"/ask {next_role}"})
         role_name = ROLE_PREFIXES.get(role, role.title())
         events.append(
             {
-                "type": "message.submit",
-                "content": f"{role_name} asks {next_role} to respond to: {reply_content}",
+                "type": "handoff.submit",
+                "role": next_role,
+                "prompt": f"{role_name} asks {next_role} to respond to: {reply_content}",
             }
         )
 
@@ -130,7 +130,7 @@ async def run(
                 for reply_event in reply_events:
                     await ws.send(json.dumps(reply_event))
                     print(f"{name}> {reply_event['content']}")
-                    if reply_event.get("type") == "message.submit" and str(reply_event.get("content", "")).startswith("/ask "):
+                    if reply_event.get("type") == "handoff.submit":
                         await asyncio.sleep(handoff_delay_seconds)
                     else:
                         await asyncio.sleep(0.05)

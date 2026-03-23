@@ -177,6 +177,7 @@ Claw95 is still early, but the repo now has a proven local-first room loop with:
 - live targeted role prompting
 - local Ollama-backed agent participation
 - verified two-agent handoff in-room
+- first-class role handoff event path (`handoff.submit` -> `room.handoff` -> `room.role_prompt`)
 - disciplined workflow
 - explicit handoff continuity
 

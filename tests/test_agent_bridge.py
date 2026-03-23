@@ -67,10 +67,11 @@ class AgentBridgeTests(unittest.TestCase):
         )
         self.assertIsNotNone(events)
         assert events is not None
-        self.assertEqual(len(events), 3)
+        self.assertEqual(len(events), 2)
         self.assertIn("Strategist", events[0]["content"])
-        self.assertEqual(events[1]["content"], "/ask critic")
-        self.assertIn("critic", events[2]["content"].lower())
+        self.assertEqual(events[1]["type"], "handoff.submit")
+        self.assertEqual(events[1]["role"], "critic")
+        self.assertIn("Strategist", events[1]["prompt"])
 
     def test_build_reply_events_uses_generation_callable_for_ollama_mode(self) -> None:
         event = {

@@ -233,8 +233,8 @@ Use a websocket client to send:
 Expected proof loop:
 1. human prompt is published to `strategist`
 2. `strategist` generates a local Ollama reply
-3. `strategist` switches target to `critic`
-4. handoff message is published to `critic`
+3. `strategist` submits first-class handoff (`handoff.submit`) to `critic`
+4. server emits `room.handoff` and `room.role_prompt` for `critic`
 5. `critic` generates a local Ollama reply
 
 Inspect the resulting log with:

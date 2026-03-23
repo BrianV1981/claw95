@@ -169,6 +169,44 @@ class RoomServerTests(unittest.IsolatedAsyncioTestCase):
         role_prompts = [item for item in payloads if item["type"] == "room.role_prompt"]
         self.assertEqual(role_prompts, [])
 
+    async def test_handoff_submit_switches_target_and_emits_role_prompt(self) -> None:
+        self.server.usernames[self.ws] = "strategist"
+
+        await self.server.handle_event(
+            self.ws,
+            {
+                "type": "handoff.submit",
+                "role": "critic",
+                "prompt": "Review the main operational risks.",
+            },
+        )
+
+        self.assertEqual(self.server.active_target, "critic")
+        payloads = [json.loads(message) for message in self.ws.sent]
+        handoff = next(item for item in payloads if item["type"] == "room.handoff")
+        self.assertEqual(handoff["from_role"], "strategist")
+        self.assertEqual(handoff["to_role"], "critic")
+        role_prompt = next(item for item in payloads if item["type"] == "room.role_prompt")
+        self.assertEqual(role_prompt["role"], "critic")
+        self.assertEqual(role_prompt["from_sender"], "strategist")
+        self.assertEqual(role_prompt["prompt"], "Review the main operational risks.")
+
+    async def test_handoff_submit_rejects_unknown_target_role(self) -> None:
+        self.server.usernames[self.ws] = "strategist"
+
+        await self.server.handle_event(
+            self.ws,
+            {
+                "type": "handoff.submit",
+                "role": "unknown",
+                "prompt": "Review the main operational risks.",
+            },
+        )
+
+        payloads = [json.loads(message) for message in self.ws.sent]
+        error = next(item for item in payloads if item["type"] == "error")
+        self.assertEqual(error["code"], "UNKNOWN_AGENT")
+
 
 if __name__ == "__main__":
     unittest.main()

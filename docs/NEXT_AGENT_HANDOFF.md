@@ -50,7 +50,8 @@ Targeted-message flow now includes:
 - `room.role_prompt` emission when a message is sent with an active target role
 - self-loop prevention so a role does not re-prompt itself on its own reply
 - agent-bridge reply generation for matching role prompts
-- optional handoff from one role to a second role via `/ask <role>` + follow-up message
+- optional first-class handoff from one role to another via `handoff.submit`
+- server-emitted `room.handoff` + target `room.role_prompt` on handoff
 
 ### Agent provider behavior
 `src/agent_bridge.py` now supports:

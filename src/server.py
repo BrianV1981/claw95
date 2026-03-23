@@ -188,6 +188,46 @@ class RoomServer:
         )
         await self._broadcast(self._room_state())
 
+    async def _handle_handoff(self, ws: WebSocketServerProtocol, sender_id: str, event: dict[str, Any]) -> None:
+        target_role = event.get("role", "")
+        prompt = event.get("prompt", "")
+        if not target_role or target_role not in self.roles:
+            await self._send(
+                ws,
+                {
+                    "type": "error",
+                    "code": "UNKNOWN_AGENT",
+                    "message": f"unknown agent: {target_role or '<missing>'}",
+                    "roles": self.roles,
+                },
+            )
+            return
+
+        self.active_target = target_role
+        handoff = {
+            "type": "room.handoff",
+            "from_role": sender_id,
+            "to_role": target_role,
+            "prompt": prompt,
+            "topic": self.topic,
+        }
+        self._log(
+            "role_handoff",
+            {
+                "sender_id": sender_id,
+                "sender_type": "agent",
+                "from_role": sender_id,
+                "to_role": target_role,
+                "prompt": prompt,
+                "topic": self.topic,
+            },
+        )
+        await self._broadcast(self._room_state())
+        await self._broadcast(handoff)
+        role_prompt = self._role_prompt_payload(sender_id, prompt)
+        self._log("role_prompt", role_prompt)
+        await self._broadcast(role_prompt)
+
     async def handle_event(self, ws: WebSocketServerProtocol, event: dict[str, Any]) -> None:
         etype = event.get("type")
         if etype == "join":
@@ -197,11 +237,16 @@ class RoomServer:
             await self._broadcast(self._room_state())
             return
 
+        sender_id = self.usernames.get(ws, "anon")
+
+        if etype == "handoff.submit":
+            await self._handle_handoff(ws, sender_id, event)
+            return
+
         if etype != "message.submit":
             await self._send(ws, {"type": "error", "code": "BAD_REQUEST", "message": "unsupported event type"})
             return
 
-        sender_id = self.usernames.get(ws, "anon")
         content = event.get("content", "")
         command = self._parse_command(content)
         if command is not None:
