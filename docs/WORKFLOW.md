@@ -3,14 +3,14 @@
 ## Purpose
 This document defines the active development workflow for Claw95.
 
-It incorporates the useful operating protocol from `gitops-bridge` and adapts it to Claw95's current proof-of-concept stage.
+Claw95 follows a **GitOps-Bridge-native** process adapted to the current proof-of-concept stage.
 
 The goal is to keep development:
-- issue-driven
 - test-driven
-- well documented
-- easy for the next agent or contributor to continue
-- free of scattered mental notes and stale scratch docs
+- issue-aware
+- deployment-oriented
+- continuously documented
+- free of branch spam and note sprawl
 
 ---
 
@@ -26,10 +26,11 @@ For any meaningful behavior change:
 If code changes the product, protocol, or current state of the project, update the relevant docs **in the same work pass**.
 
 At minimum, keep these current:
+- `README.md`
 - `docs/POC_MVP_PRD.md`
-- `docs/NEXT_AGENT_HANDOFF.md`
 - `docs/API.md`
-- this file, when workflow changes
+- `docs/NEXT_AGENT_HANDOFF.md`
+- this file
 
 ### 3. No note sprawl
 Do not leave disconnected temporary notes, random scratch docs, or stale contradictory files lying around.
@@ -44,83 +45,86 @@ Prefer small, testable, documented increments.
 
 ---
 
-## GitOps Bridge Protocol (Adapted)
-Claw95 adopts the useful parts of the `gitops-bridge` philosophy:
-- issue-driven development
-- isolated branch-per-problem work
-- semantic commit intent
-- atomic releases / changesets
-- automated version + changelog flow when available
+## GitOps Bridge Protocol (Current Interpretation)
+Claw95 adopts the updated GitOps Bridge doctrine:
+- work is tracked with issues/tasks
+- work is organized into **strategic phases / milestones**
+- each phase uses **one long-lived branch**
+- each isolated fix or feature inside that phase gets its own immediate **atomic semantic push**
 
 ### The Operating Model
-1. **Report the issue or task**
-2. **Isolate work on a dedicated branch**
+1. **Track the issue or task**
+2. **Work inside the current phase branch**
 3. **Implement in small TDD slices**
-4. **Push with semantic intent**
-5. **Promote only after verification**
+4. **Deploy each slice immediately with `gitops push`**
+5. **Promote the whole phase branch when the milestone is ready**
 
 ---
 
-## Recommended 4-Step Workflow
-### Step 1 — Report / track the work
+## Phase Protocol (Branching)
+Do **not** create a new branch for every tiny change.
+
+Preferred pattern:
+- `main` = stable baseline
+- `dev-phase-1` or similar = active milestone branch
+- stay on that phase branch for the duration of the milestone
+
+Issues still matter, but they do **not** require separate micro-branches.
+They serve as work tracking and closure references for individual pushes.
+
+---
+
+## Atomic Deployment Rule (Pushing)
+While staying on one phase branch for a longer period, deploy continuously to that branch.
+
+> Every isolated bug fix, test addition, feature addition, doc correction, or cleanup slice should be pushed immediately with its own `gitops push` command.
+
+Examples:
+```bash
+gitops push "Feature: added /who room command (Closes #4)"
+gitops push "Fix: corrected summary payload target handling (Closes #5)"
+gitops push "Docs: aligned API contract with current room state"
+```
+
+Do **not** batch unrelated changes into one mega-commit.
+
+---
+
+## Recommended Workflow
+### Step 1 — Track the work
 If GitHub issues are in use and `gitops` is available:
 ```bash
-gitops bug "Room pause command does not prevent message publication"
+gitops bug "POC lacks /who command for participant visibility"
 ```
 
-If issues are not being created formally yet, record the active work clearly in:
-- `docs/NEXT_AGENT_HANDOFF.md`
-- or the active issue tracker
+If the work is not a bug, still track it clearly through the issue system or a deliberate milestone plan.
 
-### Step 2 — Isolate the work
-If `gitops` is available:
+### Step 2 — Stay on the active phase branch
+Use one branch per phase, for example:
 ```bash
-gitops fix <issue-id>
-```
-This creates a focused issue branch like:
-```bash
-fix/issue-4
+git checkout -b dev-phase-1
 ```
 
-If `gitops` is not available, use the same branch naming style manually.
+If the branch already exists, continue using it.
+Do not branch-hop for every tiny slice.
 
-### Step 3 — Implement with TDD and semantic intent
-Work in small slices.
+### Step 3 — Implement with TDD
 Every slice should aim to keep:
 - tests green
 - docs current
 - behavior understandable
 
-When ready to commit and push, prefer GitOps Bridge if installed:
+### Step 4 — Push every slice semantically
+When a slice is complete, deploy it immediately:
 ```bash
-gitops push "Fix: Added room pause state enforcement (Closes #4)"
+gitops push "Feature: added /help command"
 ```
 
-### Step 4 — Promote after verification
-When a branch is validated and ready to merge:
+### Step 5 — Promote the phase branch
+When the milestone is validated and ready for baseline:
 ```bash
 gitops promote
 ```
-
-This preserves the GitOps Bridge archive/promote philosophy and avoids ad hoc branch chaos.
-
----
-
-## Atomic Change Rule
-Claw95 adopts the **atomic deployment rule** from `gitops-bridge`:
-
-> Do not batch unrelated changes into one mega-commit when they should be separate logical slices.
-
-For Claw95 this means:
-- one bug fix = one logical change slice
-- one protocol addition = one logical change slice
-- one behavior change = tests + code + docs together
-
-The purpose is to preserve:
-- clean history
-- understandable changelog entries
-- easier rollback
-- easier handoff to the next agent
 
 ---
 
@@ -136,40 +140,23 @@ When using GitOps Bridge, commit messages should use semantic prefixes.
 
 ### Practical Claw95 guidance
 Use:
-- `Fix:` for bug fixes or broken behavior
-- `Feature:` for meaningful new POC capability
+- `Feature:` for meaningful POC capability additions
+- `Fix:` for behavior corrections
 - `Docs:` for documentation-only work
-- `Chore:` for cleanup, maintenance, or non-product adjustments
+- `Chore:` for cleanup, workflow alignment, or non-product maintenance
 
 ---
 
-## When GitOps Bridge Is Available
-If `gitops` is installed and working in the repository environment:
+## Absolute Mandates
+When GitOps Bridge is available:
 - prefer `gitops bug`
-- prefer `gitops fix`
 - prefer `gitops push`
 - prefer `gitops promote`
+- do not hand-edit `CHANGELOG.md`
+- do not hand-edit `VERSION`
+- avoid raw `git commit` / `git push` for normal development flow
 
-And avoid raw manual:
-- `git commit`
-- `git push`
-- hand-editing `CHANGELOG.md`
-- hand-editing `VERSION`
-
----
-
-## When GitOps Bridge Is Not Available
-Claw95 should still follow the protocol conceptually.
-
-Fallback behavior:
-- create or reference an issue/task explicitly
-- use isolated issue-style branches
-- use semantic commit messages manually
-- keep changes atomic
-- update docs in the same pass
-- preserve clear handoff state in `docs/NEXT_AGENT_HANDOFF.md`
-
-The workflow matters more than the tool itself.
+Note: if GitOps Bridge helper commands lag behind the documented branching doctrine, follow the **documented doctrine** for branch strategy and still use `gitops push` / `gitops promote` for deployment steps.
 
 ---
 
@@ -191,6 +178,7 @@ At this stage of the POC, this order matters most:
 2. code
 3. docs
 4. semantic history hygiene
+5. branch cleanliness
 
-Do not optimize for release ceremony before the POC is proven.
-But do preserve enough workflow discipline that the project can scale cleanly once proven.
+Do not optimize for ceremony over progress.
+Do preserve enough discipline that the repo can scale without chaos.

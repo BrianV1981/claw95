@@ -4,9 +4,10 @@ Thanks for helping build Claw95.
 
 ## First Read
 Before making meaningful changes, read:
-1. `docs/POC_MVP_PRD.md`
-2. `docs/WORKFLOW.md`
-3. `docs/NEXT_AGENT_HANDOFF.md`
+1. `README.md`
+2. `docs/POC_MVP_PRD.md`
+3. `docs/WORKFLOW.md`
+4. `docs/NEXT_AGENT_HANDOFF.md`
 
 ## Setup
 1. Install Python 3.11+
@@ -22,23 +23,23 @@ python3 -m unittest discover -s tests -v
 ## Development Protocol
 Claw95 currently follows:
 - **TDD-first** changes
-- **issue-driven / isolated branch** workflow
+- **phase-based branching**
+- **atomic semantic pushes**
 - immediate documentation updates
 - no stale note sprawl
 
 If `gitops` from GitOps Bridge is available in the environment, prefer:
 - `gitops bug`
-- `gitops fix <id>`
 - `gitops push "Prefix: message"`
 - `gitops promote`
-
-If not available, follow the same protocol manually.
 
 ## Branch Strategy
 Preferred pattern:
 - `main` is stable
-- `fix/issue-<id>` for bug work
-- `feature/issue-<id>` or similarly scoped isolated branches for features
+- one active **phase branch** per milestone, for example `dev-phase-1`
+- do not create a brand-new branch for every tiny bug or feature slice
+
+Issues are still encouraged for tracking, but atomic slices should normally land on the current phase branch.
 
 ## Commit / Push Style
 Preferred semantic intent:
