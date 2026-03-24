@@ -1,5 +1,9 @@
 # Changelog
 
+## [v1.7.0] - 2026-03-23
+- Feature: add bridge turn-budget guard for multi-agent chains (Closes #17)
+
+
 ## [v1.6.0] - 2026-03-23
 - Feature: add role-specific prompts and prove 3-agent Ollama chain (Closes #16)
 

@@ -64,6 +64,12 @@ def generate_reply(role: str, prompt: str, provider: str = "deterministic", mode
     return result.stdout.strip()
 
 
+def should_respond(turn_count: int, max_turns: int | None) -> bool:
+    if max_turns is None:
+        return True
+    return turn_count < max_turns
+
+
 def maybe_build_reply_event(name: str, event: dict[str, Any]) -> dict[str, Any] | None:
     events = build_reply_events(name=name, event=event)
     if not events:
@@ -115,6 +121,7 @@ async def run(
     model: str | None = None,
     next_role: str | None = None,
     handoff_delay_seconds: float = 2.2,
+    max_turns: int | None = None,
 ) -> None:
     if connect is None:
         raise RuntimeError("websockets is not installed. Install dependencies from requirements.txt first.")
@@ -126,6 +133,7 @@ async def run(
             await ws.send(json.dumps({"type": "message.submit", "content": message}))
 
         print(f"[{name}] connected to {uri}. Ctrl+C to exit.")
+        turn_count = 0
         while True:
             evt = json.loads(await ws.recv())
             reply_events = build_reply_events(
@@ -136,6 +144,9 @@ async def run(
                 next_role=next_role,
             )
             if reply_events is not None:
+                if not should_respond(turn_count=turn_count, max_turns=max_turns):
+                    print(f"[{name}] max turns reached ({max_turns}); ignoring further role prompts.")
+                    continue
                 for reply_event in reply_events:
                     await ws.send(json.dumps(reply_event))
                     print(f"{name}> {reply_event['content']}")
@@ -143,6 +154,7 @@ async def run(
                         await asyncio.sleep(handoff_delay_seconds)
                     else:
                         await asyncio.sleep(0.05)
+                turn_count += 1
                 continue
 
             etype = evt.get("type")
@@ -167,6 +179,7 @@ if __name__ == "__main__":
     parser.add_argument("--model", default=None)
     parser.add_argument("--next-role", default=None)
     parser.add_argument("--handoff-delay-seconds", type=float, default=2.2)
+    parser.add_argument("--max-turns", type=int, default=None)
     args = parser.parse_args()
 
     asyncio.run(
@@ -178,5 +191,6 @@ if __name__ == "__main__":
             model=args.model,
             next_role=args.next_role,
             handoff_delay_seconds=args.handoff_delay_seconds,
+            max_turns=args.max_turns,
         )
     )

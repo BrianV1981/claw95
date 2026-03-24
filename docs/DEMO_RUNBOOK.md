@@ -270,7 +270,8 @@ python3 -m src.agent_bridge \
   --provider ollama \
   --model llama3.2:latest \
   --next-role synthesizer \
-  --handoff-delay-seconds 0.3
+  --handoff-delay-seconds 0.3 \
+  --max-turns 1
 ```
 
 ### Terminal 4 — synthesizer on Ollama

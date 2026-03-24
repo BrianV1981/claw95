@@ -5,6 +5,7 @@ from src.agent_bridge import (
     build_reply_events,
     build_role_reply,
     maybe_build_reply_event,
+    should_respond,
 )
 
 
@@ -115,6 +116,14 @@ class AgentBridgeTests(unittest.TestCase):
         assert events is not None
         self.assertEqual(len(events), 1)
         self.assertEqual(events[0]["content"], "Critic: local model reply")
+
+    def test_should_respond_when_max_turns_is_none(self) -> None:
+        self.assertTrue(should_respond(turn_count=999, max_turns=None))
+
+    def test_should_respond_with_turn_budget(self) -> None:
+        self.assertTrue(should_respond(turn_count=0, max_turns=2))
+        self.assertTrue(should_respond(turn_count=1, max_turns=2))
+        self.assertFalse(should_respond(turn_count=2, max_turns=2))
 
 
 if __name__ == "__main__":

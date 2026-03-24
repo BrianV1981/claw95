@@ -61,7 +61,8 @@ Targeted-message flow now includes:
 - configurable `--model`
 - role-specific prompt guidance for strategist / critic / researcher / synthesizer
 - optional `--next-role`
-- `--handoff-delay-seconds` to avoid cooldown collisions on immediate handoff
+- optional `--max-turns` turn budget to prevent runaway long chains
+- `--handoff-delay-seconds` to pace immediate handoff timing
 
 ### Live validation already achieved
 Validated live with local Ollama:

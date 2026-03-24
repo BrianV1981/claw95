@@ -179,6 +179,9 @@ Example submitted handoff event:
 }
 ```
 
+Agent bridges may optionally enforce a local turn budget with `--max-turns <N>`.
+When set, the bridge ignores additional matching `room.role_prompt` events after `N` responses.
+
 ### `error`
 ```json
 {"type":"error","code":"UNKNOWN_COMMAND","message":"unknown command: /whatever"}
