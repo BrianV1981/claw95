@@ -58,6 +58,27 @@ class ReplayTests(unittest.TestCase):
         self.assertIn("room_command", text)
         self.assertIn("pause", text)
 
+    def test_emit_summary_renders_handoff_readably(self) -> None:
+        events = [
+            {
+                "event_type": "role_handoff",
+                "sender_id": "strategist",
+                "from_role": "strategist",
+                "to_role": "critic",
+                "prompt": "Review risks for this launch plan.",
+                "ts": "2026-03-23T10:00:02Z",
+            }
+        ]
+
+        output = io.StringIO()
+        with redirect_stdout(output):
+            emit_summary(events)
+
+        text = output.getvalue()
+        self.assertIn("role_handoff", text)
+        self.assertIn("strategist->critic", text)
+        self.assertIn("Review risks for this launch plan.", text)
+
 
 if __name__ == "__main__":
     unittest.main()

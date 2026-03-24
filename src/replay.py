@@ -28,7 +28,12 @@ def emit_summary(events: list[Event]) -> None:
         event_type = event.get("event_type", "?")
         sender_id = event.get("sender_id") or event.get("sender", {}).get("id", "-")
         extra = ""
-        if "command" in event:
+        if event_type == "role_handoff":
+            from_role = event.get("from_role", "?")
+            to_role = event.get("to_role", "?")
+            prompt = event.get("prompt", "")
+            extra = f" handoff={from_role}->{to_role} prompt={prompt}"
+        elif "command" in event:
             extra = f" command={event['command']}"
         elif "content" in event:
             extra = f" content={event['content']}"

@@ -25,6 +25,7 @@ Active phase branch: `dev-phase-2`
 Relevant issues:
 - `#13` — add real Ollama-backed agent participation and prove two-agent room communication (achieved)
 - `#16` — add role-specific guidance and validate a 3-agent Ollama chain (achieved)
+- `#18` — improve replay readability for room handoff audit trails (achieved)
 
 ## Proven Capabilities
 ### Core room behavior
@@ -94,6 +95,7 @@ Audit logging includes:
 
 Replay utility:
 - `src/replay.py` supports loading/filtering JSONL events and printing readable summaries
+- `role_handoff` rows now render with explicit `from->to` chain details and prompt text for easier audit review
 
 ## Test Status
 Run:
@@ -101,7 +103,7 @@ Run:
 python3 -m unittest discover -s tests -v
 ```
 
-Status at last green run: **35 tests passing**
+Status at last green run: **38 tests passing**
 
 ## Known Runtime Notes
 - module-style invocation remains required:
@@ -114,7 +116,7 @@ Status at last green run: **35 tests passing**
 ## Recommended Next Slice
 1. consider adding bounded turn budgets / stop conditions for longer multi-agent chains
 2. optionally add a third distinct role path using `researcher` (evidence-gathering) rather than `synthesizer`
-3. optionally improve replay so `room.handoff` events render more readably in summaries
+3. optionally extend replay further so grouped chains render as compact conversation threads
 4. optionally add richer context-window controls per role
 5. prepare a clean Phase 2 merge when the board-room behavior feels complete enough
 

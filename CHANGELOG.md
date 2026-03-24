@@ -1,5 +1,9 @@
 # Changelog
 
+## [v1.8.0] - 2026-03-24
+- Feature: improve replay readability for handoff audit trails (Closes #18)
+
+
 ## [v1.7.0] - 2026-03-23
 - Feature: add bridge turn-budget guard for multi-agent chains (Closes #17)
 
