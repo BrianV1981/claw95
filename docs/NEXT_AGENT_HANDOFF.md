@@ -23,7 +23,8 @@ Working doctrine remains:
 Active phase branch: `dev-phase-2`
 
 Relevant issues:
-- `#13` — add real Ollama-backed agent participation and prove two-agent room communication (in progress; live proof already achieved)
+- `#13` — add real Ollama-backed agent participation and prove two-agent room communication (achieved)
+- `#16` — add role-specific guidance and validate a 3-agent Ollama chain (achieved)
 
 ## Proven Capabilities
 ### Core room behavior
@@ -58,6 +59,7 @@ Targeted-message flow now includes:
 - `deterministic` provider mode
 - `ollama` provider mode
 - configurable `--model`
+- role-specific prompt guidance for strategist / critic / researcher / synthesizer
 - optional `--next-role`
 - `--handoff-delay-seconds` to avoid cooldown collisions on immediate handoff
 
@@ -65,15 +67,18 @@ Targeted-message flow now includes:
 Validated live with local Ollama:
 - `strategist` on `ollama` (`llama3.2:latest`)
 - `critic` on `ollama` (`llama3.2:latest`)
+- `synthesizer` on `ollama` (`llama3.2:latest`)
 - human prompt targeted to `strategist`
 - strategist generated a real local-model reply
 - strategist handed off to critic
 - critic generated a real local-model reply
+- critic handed off to synthesizer
+- synthesizer generated a real local-model reply
 
 This means Claw95 has now proven:
 - human → AI role prompt
-- AI role → second AI role handoff
-- local LLM-backed in-room communication
+- AI role → AI role handoff
+- three-agent local LLM-backed in-room communication
 
 ## Audit / Replay Status
 Audit logging includes:
@@ -95,22 +100,22 @@ Run:
 python3 -m unittest discover -s tests -v
 ```
 
-Status at last green run: **32 tests passing**
+Status at last green run: **35 tests passing**
 
 ## Known Runtime Notes
 - module-style invocation remains required:
   - `python3 -m src.server`
   - `python3 -m src.agent_bridge`
   - `python3 -m src.replay`
-- current runtime still emits `websockets.* is deprecated` warnings; functional, but worth cleaning up in a future slice
-- immediate handoff without delay can collide with moderation cooldown; use `--handoff-delay-seconds` when chaining roles
+- websocket deprecation-warning imports were removed in issue `#15`
+- immediate handoff delay remains available for pacing multi-role chains, but handoff no longer depends on command/cooldown coupling
 
 ## Recommended Next Slice
-1. commit the Ollama integration + self-loop guard + docs update
-2. decide whether role handoff should stay command-driven or become a first-class server event
-3. optionally add role-specific prompt templates / context windows per role
-4. optionally add a third Ollama-backed role (`researcher` or `synthesizer`)
-5. optionally remove websocket deprecation warnings by updating imports/API usage
+1. consider adding bounded turn budgets / stop conditions for longer multi-agent chains
+2. optionally add a third distinct role path using `researcher` (evidence-gathering) rather than `synthesizer`
+3. optionally improve replay so `room.handoff` events render more readably in summaries
+4. optionally add richer context-window controls per role
+5. prepare a clean Phase 2 merge when the board-room behavior feels complete enough
 
 ## Documentation Rule
 No scratch-note sprawl.

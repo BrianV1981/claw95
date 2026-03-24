@@ -176,7 +176,9 @@ Claw95 is still early, but the repo now has a proven local-first room loop with:
 - deterministic moderation
 - live targeted role prompting
 - local Ollama-backed agent participation
+- role-specific Ollama prompt guidance per board-room role
 - verified two-agent handoff in-room
+- verified three-agent Ollama chain (`strategist -> critic -> synthesizer`)
 - first-class role handoff event path (`handoff.submit` -> `room.handoff` -> `room.role_prompt`)
 - disciplined workflow
 - explicit handoff continuity

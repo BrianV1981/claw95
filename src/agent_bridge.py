@@ -19,6 +19,13 @@ ROLE_PREFIXES = {
     "synthesizer": "Synthesizer",
 }
 
+ROLE_GUIDANCE = {
+    "strategist": "Focus on plans, trade-offs, sequencing, and practical next steps.",
+    "critic": "Focus on risks, weaknesses, missing assumptions, and operational failure modes.",
+    "researcher": "Focus on evidence needs, open questions, validation steps, and factual uncertainty.",
+    "synthesizer": "Focus on consensus, key takeaways, tensions between viewpoints, and a clear integrated summary.",
+}
+
 
 def build_role_reply(role: str, prompt: str) -> str:
     role_name = ROLE_PREFIXES.get(role, role.title())
@@ -30,9 +37,11 @@ def build_ollama_prompt(role: str, event: dict[str, Any]) -> str:
     prompt = event.get("prompt", "")
     sender = event.get("from_sender", "unknown")
     role_name = ROLE_PREFIXES.get(role, role.title())
+    guidance = ROLE_GUIDANCE.get(role, "Stay in role and be specific.")
     return (
         f"You are {role_name} in the Claw95 AI board room. "
         f"Respond as the {role_name} role in 2-5 concise sentences.\n"
+        f"Role guidance: {guidance}\n"
         f"Topic: {topic or 'General discussion'}\n"
         f"Prompt from {sender}: {prompt}\n"
         f"Stay in role and be specific."

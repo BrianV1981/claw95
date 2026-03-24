@@ -242,3 +242,56 @@ Inspect the resulting log with:
 python3 -m src.replay /tmp/claw95-ollama-events.jsonl --event-type message_published
 python3 -m src.replay /tmp/claw95-ollama-events.jsonl --event-type role_prompt
 ```
+
+## Ollama Three-Agent Demo
+To prove a larger board-room chain locally with Ollama:
+
+### Terminal 1 — server
+```bash
+python3 -m src.server --host 127.0.0.1 --port 8782 --log /tmp/claw95-3agent-events.jsonl
+```
+
+### Terminal 2 — strategist on Ollama, handoff to critic
+```bash
+python3 -m src.agent_bridge \
+  --name strategist \
+  --uri ws://127.0.0.1:8782 \
+  --provider ollama \
+  --model llama3.2:latest \
+  --next-role critic \
+  --handoff-delay-seconds 0.3
+```
+
+### Terminal 3 — critic on Ollama, handoff to synthesizer
+```bash
+python3 -m src.agent_bridge \
+  --name critic \
+  --uri ws://127.0.0.1:8782 \
+  --provider ollama \
+  --model llama3.2:latest \
+  --next-role synthesizer \
+  --handoff-delay-seconds 0.3
+```
+
+### Terminal 4 — synthesizer on Ollama
+```bash
+python3 -m src.agent_bridge \
+  --name synthesizer \
+  --uri ws://127.0.0.1:8782 \
+  --provider ollama \
+  --model llama3.2:latest
+```
+
+### Human prompt
+```json
+{"type":"message.submit","content":"/topic three agent ollama board room"}
+{"type":"message.submit","content":"/ask strategist"}
+{"type":"message.submit","content":"Propose a launch plan, have critic review operational risks, then have synthesizer produce a final recommendation."}
+```
+
+Expected proof loop:
+1. strategist proposes a plan
+2. strategist hands off to critic
+3. critic reviews risks
+4. critic hands off to synthesizer
+5. synthesizer produces an integrated recommendation

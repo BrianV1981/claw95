@@ -160,6 +160,8 @@ Every logged event includes stable metadata:
 ## Agent Bridge Behavior (Current POC)
 When an agent bridge receives a matching `room.role_prompt`, it can submit either a direct reply or a first-class handoff event.
 
+In Ollama mode, prompts now include role-specific guidance so strategist, critic, researcher, and synthesizer are nudged toward distinct board-room behaviors.
+
 Example submitted reply event:
 ```json
 {

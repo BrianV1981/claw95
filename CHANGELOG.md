@@ -1,5 +1,9 @@
 # Changelog
 
+## [v1.6.0] - 2026-03-23
+- Feature: add role-specific prompts and prove 3-agent Ollama chain (Closes #16)
+
+
 ## [v1.5.1] - 2026-03-23
 - Fix: remove deprecated websockets legacy imports (Closes #15)
 

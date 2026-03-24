@@ -27,6 +27,22 @@ class AgentBridgeTests(unittest.TestCase):
         self.assertIn("Launch review", prompt)
         self.assertIn("Review this launch plan", prompt)
 
+    def test_build_ollama_prompt_includes_role_specific_guidance(self) -> None:
+        event = {
+            "type": "room.role_prompt",
+            "role": "critic",
+            "prompt": "Review this launch plan",
+            "topic": "Launch review",
+            "from_sender": "human",
+        }
+        critic_prompt = build_ollama_prompt("critic", event)
+        strategist_prompt = build_ollama_prompt("strategist", event)
+        synthesizer_prompt = build_ollama_prompt("synthesizer", event)
+
+        self.assertIn("risks", critic_prompt.lower())
+        self.assertIn("trade-offs", strategist_prompt.lower())
+        self.assertIn("consensus", synthesizer_prompt.lower())
+
     def test_maybe_build_reply_event_returns_none_for_unrelated_events(self) -> None:
         event = {"type": "message.published", "content": "hello"}
         self.assertIsNone(maybe_build_reply_event("critic", event))
