@@ -1,0 +1,10 @@
+enabled: true
+room_uri: "ws://127.0.0.1:8765"
+bridge_name: "GrowthBot"
+trigger_mode: "mention"
+max_concurrent: 1
+request_timeout_seconds: 120
+session_mode: "room"
+response_max_chars: 1200
+agent_map:
+  growth: "growth"
